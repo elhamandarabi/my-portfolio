@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Courses — Elham.dev</title>
+<meta name="description" content="Free programming courses taught by Elhamuddin Andarabi. Learn HTML, CSS, JavaScript, Python and more.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563eb'/><text y='72' x='50' text-anchor='middle' font-size='58' font-family='monospace' font-weight='700' fill='white'>E.</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{--blue:#2563eb;--blue-light:#eff6ff;--blue-mid:#bfdbfe;--text-dark:#0f172a;--text-mid:#475569;--text-muted:#94a3b8;--border:#e2e8f0;--bg:#f8fafc;--white:#ffffff;--nav-bg:rgba(255,255,255,0.95);--footer-bg:#0f172a;}
+  [data-theme="dark"]{--blue:#60a5fa;--blue-light:#1e3a5f;--blue-mid:#1e40af;--text-dark:#f1f5f9;--text-mid:#94a3b8;--text-muted:#64748b;--border:#1e293b;--bg:#0f172a;--white:#1e293b;--nav-bg:rgba(15,23,42,0.95);--footer-bg:#020617;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-dark);line-height:1.6;transition:background .3s,color .3s;}
+  nav{position:sticky;top:0;background:var(--nav-bg);backdrop-filter:blur(10px);border-bottom:.5px solid var(--border);z-index:100;display:flex;justify-content:space-between;align-items:center;padding:1rem 4rem;transition:background .3s;}
+  .logo{font-size:18px;font-weight:600;color:var(--text-dark);font-family:'DM Mono',monospace;text-decoration:none;}
+  .logo span{color:var(--blue);}
+  .nav-right{display:flex;align-items:center;gap:1.5rem;}
+  .nav-right a{text-decoration:none;font-size:14px;color:var(--text-mid);transition:color .2s;}
+  .nav-right a:hover{color:var(--blue);}
+  .theme-toggle{background:var(--white);border:.5px solid var(--border);border-radius:999px;padding:6px 14px;cursor:pointer;font-size:13px;color:var(--text-mid);font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:6px;transition:all .2s;}
+  .theme-toggle:hover{border-color:var(--blue);color:var(--blue);}
+
+  /* Hero */
+  .page-hero{background:var(--white);border-bottom:.5px solid var(--border);padding:4rem 4rem 3.5rem;text-align:center;}
+  .page-hero-inner{max-width:640px;margin:0 auto;}
+  .page-label{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:1.5px;color:var(--blue);font-family:'DM Mono',monospace;margin-bottom:.5rem;}
+  .page-hero h1{font-size:38px;font-weight:600;letter-spacing:-.5px;color:var(--text-dark);margin-bottom:1rem;}
+  .page-hero p{font-size:15px;color:var(--text-mid);line-height:1.75;}
+  .hero-stats{display:flex;justify-content:center;gap:3rem;margin-top:2rem;flex-wrap:wrap;}
+  .hero-stat strong{font-size:22px;font-weight:600;color:var(--blue);font-family:'DM Mono',monospace;display:block;}
+  .hero-stat span{font-size:12px;color:var(--text-muted);}
+
+  /* Filter */
+  .filters{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:1.5rem 4rem;}
+  .filter-btn{background:var(--white);border:.5px solid var(--border);border-radius:999px;padding:7px 18px;font-size:13px;font-weight:500;color:var(--text-mid);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+  .filter-btn:hover,.filter-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+
+  /* Grid */
+  .courses-grid{max-width:1100px;margin:0 auto;padding:1rem 4rem 5rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem;}
+  .course-card{background:var(--white);border:.5px solid var(--border);border-radius:16px;overflow:hidden;transition:border-color .2s,transform .2s,box-shadow .2s;}
+  .course-card:hover{border-color:var(--blue);transform:translateY(-4px);box-shadow:0 12px 40px rgba(37,99,235,.1);}
+  .course-banner{height:150px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+  .course-banner-icon{font-size:64px;opacity:.15;position:absolute;}
+  .course-banner-label{font-size:15px;font-weight:700;color:#fff;font-family:'DM Mono',monospace;z-index:1;text-shadow:0 2px 8px rgba(0,0,0,.2);}
+  .course-body{padding:1.5rem;}
+  .course-meta{display:flex;gap:8px;align-items:center;margin-bottom:.75rem;flex-wrap:wrap;}
+  .course-level{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;padding:3px 9px;border-radius:999px;font-family:'DM Mono',monospace;}
+  .level-beginner{background:#dcfce7;color:#166534;}
+  .level-intermediate{background:#fef9c3;color:#854d0e;}
+  .level-advanced{background:#fee2e2;color:#991b1b;}
+  [data-theme="dark"] .level-beginner{background:#052e16;color:#4ade80;}
+  [data-theme="dark"] .level-intermediate{background:#422006;color:#fbbf24;}
+  [data-theme="dark"] .level-advanced{background:#450a0a;color:#fca5a5;}
+  .course-free{font-size:10px;font-weight:600;background:var(--blue-light);color:var(--blue);padding:3px 9px;border-radius:999px;font-family:'DM Mono',monospace;}
+  .course-body h2{font-size:16px;font-weight:600;color:var(--text-dark);margin-bottom:.5rem;}
+  .course-body p{font-size:13px;color:var(--text-mid);line-height:1.6;margin-bottom:1rem;}
+  .course-info{display:flex;gap:1rem;font-size:12px;color:var(--text-muted);margin-bottom:1.25rem;font-family:'DM Mono',monospace;}
+  .course-progress-wrap{margin-bottom:1rem;}
+  .course-progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-bottom:4px;}
+  .course-progress-bg{height:4px;background:var(--border);border-radius:999px;overflow:hidden;}
+  .course-progress-fill{height:100%;background:linear-gradient(90deg,var(--blue),#60a5fa);border-radius:999px;transition:width .6s ease;}
+  .btn-start{display:block;text-align:center;background:var(--blue);color:#fff;text-decoration:none;padding:11px;border-radius:9px;font-size:13px;font-weight:500;transition:opacity .2s,transform .15s;}
+  .btn-start:hover{opacity:.9;transform:translateY(-1px);}
+  .btn-continue{background:var(--blue-light);color:var(--blue);border:.5px solid var(--blue-mid);}
+
+  footer{background:var(--footer-bg);color:#94a3b8;text-align:center;padding:2rem 4rem;font-size:13px;}
+  footer span{color:#60a5fa;}
+  @media(max-width:768px){nav{padding:1rem 1.5rem;}.page-hero{padding:2.5rem 1.5rem;}.page-hero h1{font-size:28px;}.filters{padding:1rem 1.5rem;}.courses-grid{padding:1rem 1.5rem 3rem;}.hero-stats{gap:1.5rem;}footer{padding:1.5rem;}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">Elham<span>.</span>dev</a>
+  <div class="nav-right">
+    <a href="index.html">Portfolio</a>
+    <a href="courses.html" style="color:var(--blue);font-weight:500;">Courses</a>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn"><span>🌙</span> Dark</button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div class="page-label">Free education</div>
+    <h1>Learn to Code with Elhamuddin</h1>
+    <p>Hands-on courses designed to take you from zero to confident developer. All courses are free, self-paced, and built by a real developer.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><strong>4</strong><span>Courses</span></div>
+      <div class="hero-stat"><strong>40+</strong><span>Lessons</span></div>
+      <div class="hero-stat"><strong>Free</strong><span>Forever</span></div>
+      <div class="hero-stat"><strong>Certificate</strong><span>On Completion</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="filters">
+  <button class="filter-btn active" onclick="filterCourses('all',this)">All Courses</button>
+  <button class="filter-btn" onclick="filterCourses('beginner',this)">Beginner</button>
+  <button class="filter-btn" onclick="filterCourses('intermediate',this)">Intermediate</button>
+  <button class="filter-btn" onclick="filterCourses('web',this)">Web Dev</button>
+  <button class="filter-btn" onclick="filterCourses('python',this)">Python</button>
+</div>
+
+<div class="courses-grid" id="coursesGrid">
+
+  <div class="course-card" data-tags="beginner web">
+    <div class="course-banner" style="background:linear-gradient(135deg,#e55d2b,#f97316);">
+      <span class="course-banner-icon">🌐</span>
+      <span class="course-banner-label">HTML &amp; CSS</span>
+    </div>
+    <div class="course-body">
+      <div class="course-meta">
+        <span class="course-level level-beginner">Beginner</span>
+        <span class="course-free">FREE</span>
+      </div>
+      <h2>HTML &amp; CSS Fundamentals</h2>
+      <p>Build your first websites from scratch. Learn the building blocks of the web — structure, styling, and responsive design.</p>
+      <div class="course-info">
+        <span>📚 10 lessons</span>
+        <span>⏱ ~4 hours</span>
+        <span>🏆 Certificate</span>
+      </div>
+      <div class="course-progress-wrap" id="progress-html-wrap" style="display:none;">
+        <div class="course-progress-label"><span>Progress</span><span id="progress-html-pct">0%</span></div>
+        <div class="course-progress-bg"><div class="course-progress-fill" id="progress-html-bar" style="width:0%"></div></div>
+      </div>
+      <a href="course-html.html" class="btn-start" id="btn-html">Start Learning →</a>
+    </div>
+  </div>
+
+  <div class="course-card" data-tags="beginner web intermediate">
+    <div class="course-banner" style="background:linear-gradient(135deg,#eab308,#f59e0b);">
+      <span class="course-banner-icon">⚡</span>
+      <span class="course-banner-label">JavaScript</span>
+    </div>
+    <div class="course-body">
+      <div class="course-meta">
+        <span class="course-level level-intermediate">Intermediate</span>
+        <span class="course-free">FREE</span>
+      </div>
+      <h2>JavaScript Essentials</h2>
+      <p>Master the language of the web. Learn variables, functions, DOM manipulation, events, and modern ES6+ features.</p>
+      <div class="course-info">
+        <span>📚 10 lessons</span>
+        <span>⏱ ~5 hours</span>
+        <span>🏆 Certificate</span>
+      </div>
+      <div class="course-progress-wrap" id="progress-js-wrap" style="display:none;">
+        <div class="course-progress-label"><span>Progress</span><span id="progress-js-pct">0%</span></div>
+        <div class="course-progress-bg"><div class="course-progress-fill" id="progress-js-bar" style="width:0%"></div></div>
+      </div>
+      <a href="course-js.html" class="btn-start" id="btn-js">Start Learning →</a>
+    </div>
+  </div>
+
+  <div class="course-card" data-tags="beginner python">
+    <div class="course-banner" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);">
+      <span class="course-banner-icon">🐍</span>
+      <span class="course-banner-label">Python</span>
+    </div>
+    <div class="course-body">
+      <div class="course-meta">
+        <span class="course-level level-beginner">Beginner</span>
+        <span class="course-free">FREE</span>
+      </div>
+      <h2>Python for Beginners</h2>
+      <p>One of the world's most popular languages. Learn Python from scratch — perfect for web, data science, and automation.</p>
+      <div class="course-info">
+        <span>📚 10 lessons</span>
+        <span>⏱ ~5 hours</span>
+        <span>🏆 Certificate</span>
+      </div>
+      <div class="course-progress-wrap" id="progress-python-wrap" style="display:none;">
+        <div class="course-progress-label"><span>Progress</span><span id="progress-python-pct">0%</span></div>
+        <div class="course-progress-bg"><div class="course-progress-fill" id="progress-python-bar" style="width:0%"></div></div>
+      </div>
+      <a href="course-python.html" class="btn-start" id="btn-python">Start Learning →</a>
+    </div>
+  </div>
+
+  <div class="course-card" data-tags="intermediate web">
+    <div class="course-banner" style="background:linear-gradient(135deg,#06b6d4,#0891b2);">
+      <span class="course-banner-icon">⚛️</span>
+      <span class="course-banner-label">React.js</span>
+    </div>
+    <div class="course-body">
+      <div class="course-meta">
+        <span class="course-level level-intermediate">Intermediate</span>
+        <span class="course-free">FREE</span>
+      </div>
+      <h2>React.js Fundamentals</h2>
+      <p>Build modern, dynamic user interfaces with React. Learn components, props, state, hooks, and build real projects.</p>
+      <div class="course-info">
+        <span>📚 10 lessons</span>
+        <span>⏱ ~6 hours</span>
+        <span>🏆 Certificate</span>
+      </div>
+      <div class="course-progress-wrap" id="progress-react-wrap" style="display:none;">
+        <div class="course-progress-label"><span>Progress</span><span id="progress-react-pct">0%</span></div>
+        <div class="course-progress-bg"><div class="course-progress-fill" id="progress-react-bar" style="width:0%"></div></div>
+      </div>
+      <a href="course-react.html" class="btn-start" id="btn-react">Start Learning →</a>
+    </div>
+  </div>
+
+</div>
+
+<footer><p>Designed &amp; Built by <span>Elhamuddin Andarabi</span> &copy; 2026</p></footer>
+
+<script>
+  function toggleTheme(){const h=document.documentElement,b=document.getElementById('themeBtn');if(h.getAttribute('data-theme')==='light'){h.setAttribute('data-theme','dark');b.innerHTML='<span>☀️</span> Light';}else{h.setAttribute('data-theme','light');b.innerHTML='<span>🌙</span> Dark';}}
+
+  function filterCourses(tag, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.course-card').forEach(card => {
+      const tags = card.dataset.tags || '';
+      card.style.display = (tag === 'all' || tags.includes(tag)) ? '' : 'none';
+    });
+  }
+
+  const courses = ['html','js','python','react'];
+  courses.forEach(id => {
+    const data = localStorage.getItem('course_' + id);
+    if (!data) return;
+    const p = JSON.parse(data);
+    const pct = Math.round((p.completed / 10) * 100);
+    document.getElementById('progress-' + id + '-wrap').style.display = 'block';
+    document.getElementById('progress-' + id + '-pct').textContent = pct + '%';
+    document.getElementById('progress-' + id + '-bar').style.width = pct + '%';
+    if (pct > 0) {
+      const btn = document.getElementById('btn-' + id);
+      btn.textContent = pct === 100 ? '✅ Completed' : 'Continue →';
+      if (pct > 0 && pct < 100) btn.classList.add('btn-continue');
+    }
+  });
+</script>
+</body>
+</html>

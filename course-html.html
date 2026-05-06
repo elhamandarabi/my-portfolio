@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HTML & CSS — Elham.dev</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563eb'/><text y='72' x='50' text-anchor='middle' font-size='58' font-family='monospace' font-weight='700' fill='white'>E.</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--blue:#2563eb;--blue-light:#eff6ff;--blue-mid:#bfdbfe;--text-dark:#0f172a;--text-mid:#475569;--text-muted:#94a3b8;--border:#e2e8f0;--bg:#f8fafc;--white:#ffffff;--nav-bg:rgba(255,255,255,0.97);--sidebar-w:280px;--orange:#e55d2b;}
+[data-theme="dark"]{--blue:#60a5fa;--blue-light:#1e3a5f;--blue-mid:#1e40af;--text-dark:#f1f5f9;--text-mid:#94a3b8;--text-muted:#64748b;--border:#1e293b;--bg:#0f172a;--white:#1e293b;--nav-bg:rgba(15,23,42,0.97);}
+html{scroll-behavior:smooth;}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-dark);line-height:1.6;}
+
+/* TOP BAR */
+.topbar{position:fixed;top:0;left:0;right:0;height:56px;background:var(--nav-bg);border-bottom:.5px solid var(--border);z-index:200;display:flex;align-items:center;padding:0 1.5rem;gap:1rem;}
+.topbar-back{text-decoration:none;font-size:13px;color:var(--text-mid);display:flex;align-items:center;gap:5px;transition:color .2s;}
+.topbar-back:hover{color:var(--blue);}
+.topbar-title{font-size:14px;font-weight:600;color:var(--text-dark);font-family:'DM Mono',monospace;flex:1;}
+.topbar-progress{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text-muted);}
+.topbar-bar-bg{width:120px;height:5px;background:var(--border);border-radius:999px;overflow:hidden;}
+.topbar-bar-fill{height:100%;background:linear-gradient(90deg,var(--orange),#f97316);border-radius:999px;transition:width .5s;}
+.theme-toggle{background:var(--white);border:.5px solid var(--border);border-radius:999px;padding:5px 12px;cursor:pointer;font-size:12px;color:var(--text-mid);font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:5px;}
+.theme-toggle:hover{border-color:var(--blue);color:var(--blue);}
+
+/* LAYOUT */
+.layout{display:flex;margin-top:56px;min-height:calc(100vh - 56px);}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--white);border-right:.5px solid var(--border);position:fixed;top:56px;bottom:0;overflow-y:auto;transition:transform .3s;}
+.sidebar-header{padding:1.25rem 1.25rem .75rem;border-bottom:.5px solid var(--border);}
+.sidebar-course-name{font-size:13px;font-weight:600;color:var(--text-dark);}
+.sidebar-pct{font-size:11px;color:var(--text-muted);margin-top:3px;}
+.lesson-list{padding:.5rem 0;}
+.lesson-item{display:flex;align-items:center;gap:10px;padding:.65rem 1.25rem;cursor:pointer;font-size:13px;color:var(--text-mid);border-left:2px solid transparent;transition:all .15s;}
+.lesson-item:hover{background:var(--bg);color:var(--text-dark);}
+.lesson-item.active{background:var(--blue-light);color:var(--blue);border-left-color:var(--blue);font-weight:500;}
+.lesson-item.done{color:var(--text-muted);}
+.lesson-item.done .lesson-num{background:#dcfce7;color:#16a34a;}
+[data-theme="dark"] .lesson-item.done .lesson-num{background:#052e16;color:#4ade80;}
+.lesson-num{width:22px;height:22px;border-radius:50%;background:var(--border);color:var(--text-muted);font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'DM Mono',monospace;}
+.lesson-item.active .lesson-num{background:var(--blue);color:#fff;}
+
+/* MAIN */
+.main{margin-left:var(--sidebar-w);flex:1;padding:2.5rem 3rem;max-width:820px;}
+.lesson-pane{display:none;}
+.lesson-pane.active{display:block;}
+.lesson-tag{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:1.5px;color:var(--orange);font-family:'DM Mono',monospace;margin-bottom:.5rem;}
+.lesson-title{font-size:26px;font-weight:600;letter-spacing:-.5px;color:var(--text-dark);margin-bottom:1.5rem;}
+.lesson-body h3{font-size:16px;font-weight:600;color:var(--text-dark);margin:1.5rem 0 .6rem;}
+.lesson-body p{font-size:15px;color:var(--text-mid);line-height:1.8;margin-bottom:1rem;}
+.lesson-body ul{padding-left:1.25rem;margin-bottom:1rem;}
+.lesson-body ul li{font-size:15px;color:var(--text-mid);line-height:1.8;margin-bottom:.25rem;}
+.lesson-body strong{color:var(--text-dark);font-weight:600;}
+
+/* CODE BLOCK */
+.code-block{background:#0f172a;border-radius:10px;overflow:hidden;margin:1.25rem 0;}
+[data-theme="dark"] .code-block{background:#020617;border:.5px solid var(--border);}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:.6rem 1rem;border-bottom:.5px solid #1e293b;}
+.code-lang{font-size:11px;font-family:'DM Mono',monospace;color:#64748b;font-weight:500;}
+.code-copy{background:none;border:none;color:#64748b;cursor:pointer;font-size:11px;font-family:'DM Mono',monospace;padding:2px 8px;border-radius:4px;transition:color .2s;}
+.code-copy:hover{color:#94a3b8;}
+.code-block pre{padding:1.25rem;overflow-x:auto;}
+.code-block code{font-family:'DM Mono',monospace;font-size:13px;line-height:1.7;color:#e2e8f0;}
+.kw{color:#93c5fd;}.str{color:#86efac;}.cmt{color:#64748b;font-style:italic;}.tag{color:#f9a8d4;}.attr{color:#fde68a;}.val{color:#86efac;}.num{color:#fca5a5;}
+
+/* TIP BOX */
+.tip{background:var(--blue-light);border:.5px solid var(--blue-mid);border-radius:10px;padding:1rem 1.25rem;margin:1.25rem 0;font-size:14px;color:var(--text-dark);}
+.tip strong{color:var(--blue);}
+
+/* QUIZ */
+.quiz-section{margin-top:2.5rem;border-top:.5px solid var(--border);padding-top:2rem;}
+.quiz-title{font-size:17px;font-weight:600;color:var(--text-dark);margin-bottom:1.5rem;}
+.quiz-q{margin-bottom:1.5rem;}
+.quiz-q p{font-size:14px;font-weight:500;color:var(--text-dark);margin-bottom:.75rem;}
+.quiz-options{display:flex;flex-direction:column;gap:.5rem;}
+.quiz-opt{display:flex;align-items:center;gap:10px;padding:.7rem 1rem;border:.5px solid var(--border);border-radius:9px;cursor:pointer;font-size:13px;color:var(--text-mid);transition:all .2s;user-select:none;}
+.quiz-opt:hover{border-color:var(--blue);background:var(--blue-light);color:var(--text-dark);}
+.quiz-opt.correct{border-color:#16a34a;background:#dcfce7;color:#166534;}
+.quiz-opt.wrong{border-color:#dc2626;background:#fee2e2;color:#991b1b;}
+[data-theme="dark"] .quiz-opt.correct{background:#052e16;color:#4ade80;border-color:#16a34a;}
+[data-theme="dark"] .quiz-opt.wrong{background:#450a0a;color:#fca5a5;border-color:#dc2626;}
+.quiz-opt input{accent-color:var(--blue);}
+.quiz-submit{margin-top:1rem;background:var(--blue);color:#fff;border:none;padding:11px 28px;border-radius:9px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .2s;}
+.quiz-submit:hover{opacity:.85;}
+.quiz-result{margin-top:1rem;padding:.85rem 1.1rem;border-radius:9px;font-size:14px;font-weight:500;display:none;}
+.quiz-result.pass{background:#dcfce7;color:#166534;border:.5px solid #bbf7d0;display:block;}
+.quiz-result.fail{background:#fee2e2;color:#991b1b;border:.5px solid #fecaca;display:block;}
+[data-theme="dark"] .quiz-result.pass{background:#052e16;color:#4ade80;}
+[data-theme="dark"] .quiz-result.fail{background:#450a0a;color:#fca5a5;}
+
+/* NAV BUTTONS */
+.lesson-nav{display:flex;justify-content:space-between;margin-top:2.5rem;padding-top:1.5rem;border-top:.5px solid var(--border);}
+.nav-btn{padding:11px 24px;border-radius:9px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;transition:all .2s;}
+.nav-btn-prev{background:var(--white);border:.5px solid var(--border);color:var(--text-mid);}
+.nav-btn-prev:hover{border-color:var(--blue);color:var(--blue);}
+.nav-btn-next{background:var(--blue);color:#fff;border:none;}
+.nav-btn-next:hover{opacity:.88;}
+
+/* CERTIFICATE */
+.cert-section{text-align:center;padding:2rem;background:var(--white);border:.5px solid var(--border);border-radius:16px;margin-top:2rem;}
+.cert-section h2{font-size:22px;font-weight:600;color:var(--text-dark);margin-bottom:.75rem;}
+.cert-section p{font-size:14px;color:var(--text-mid);margin-bottom:1.5rem;}
+.cert-btn{background:linear-gradient(135deg,var(--orange),#f97316);color:#fff;border:none;padding:13px 32px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .2s;}
+.cert-btn:hover{opacity:.88;}
+canvas#certCanvas{display:none;}
+
+/* MOBILE SIDEBAR TOGGLE */
+.sidebar-toggle{display:none;position:fixed;bottom:24px;left:24px;z-index:300;width:44px;height:44px;border-radius:50%;background:var(--orange);color:#fff;border:none;font-size:20px;cursor:pointer;box-shadow:0 4px 20px rgba(229,93,43,.4);}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);z-index:150;}
+  .sidebar.open{transform:translateX(0);}
+  .main{margin-left:0;padding:1.5rem 1.25rem;}
+  .sidebar-toggle{display:flex;align-items:center;justify-content:center;}
+  .topbar{padding:0 1rem;}
+  .topbar-bar-bg{width:80px;}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <a href="courses.html" class="topbar-back">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Courses
+  </a>
+  <div class="topbar-title">HTML &amp; CSS Fundamentals</div>
+  <div class="topbar-progress">
+    <div class="topbar-bar-bg"><div class="topbar-bar-fill" id="topbarFill" style="width:0%"></div></div>
+    <span id="topbarPct">0%</span>
+  </div>
+  <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙 Dark</button>
+</div>
+
+<!-- SIDEBAR TOGGLE (mobile) -->
+<button class="sidebar-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-course-name">HTML &amp; CSS Fundamentals</div>
+      <div class="sidebar-pct" id="sidebarPct">0 of 10 lessons complete</div>
+    </div>
+    <div class="lesson-list" id="lessonList"></div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- LESSON 1 -->
+    <div class="lesson-pane active" id="lesson-0">
+      <div class="lesson-tag">Lesson 1 of 10</div>
+      <h1 class="lesson-title">What is HTML?</h1>
+      <div class="lesson-body">
+        <p><strong>HTML</strong> stands for <strong>HyperText Markup Language</strong>. It is the standard language used to create and structure content on the web. Every website you visit is built using HTML.</p>
+        <h3>What does HTML do?</h3>
+        <p>HTML tells the browser <em>what</em> to show — headings, paragraphs, images, links, and more. Think of it as the skeleton of a webpage.</p>
+        <ul>
+          <li>HTML uses <strong>tags</strong> to wrap content</li>
+          <li>Tags usually come in pairs: an opening tag and a closing tag</li>
+          <li>A complete HTML file has a specific structure</li>
+        </ul>
+        <h3>Your first HTML page</h3>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">HTML</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="tag">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;html&gt;</span>
+  <span class="tag">&lt;head&gt;</span>
+    <span class="tag">&lt;title&gt;</span>My First Page<span class="tag">&lt;/title&gt;</span>
+  <span class="tag">&lt;/head&gt;</span>
+  <span class="tag">&lt;body&gt;</span>
+    <span class="tag">&lt;h1&gt;</span>Hello, World!<span class="tag">&lt;/h1&gt;</span>
+    <span class="tag">&lt;p&gt;</span>This is my first webpage.<span class="tag">&lt;/p&gt;</span>
+  <span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span></code></pre>
+        </div>
+        <div class="tip"><strong>💡 Tip:</strong> Every HTML file starts with <code>&lt;!DOCTYPE html&gt;</code> — this tells the browser which version of HTML you're using (HTML5).</div>
+        <h3>Key HTML Tags</h3>
+        <ul>
+          <li><strong>&lt;html&gt;</strong> — The root element of the page</li>
+          <li><strong>&lt;head&gt;</strong> — Contains meta info (title, links to CSS)</li>
+          <li><strong>&lt;body&gt;</strong> — Contains everything visible on the page</li>
+          <li><strong>&lt;h1&gt; to &lt;h6&gt;</strong> — Headings (h1 is largest)</li>
+          <li><strong>&lt;p&gt;</strong> — Paragraph of text</li>
+        </ul>
+      </div>
+      <div class="quiz-section">
+        <div class="quiz-title">Quick Quiz — Lesson 1</div>
+        <div class="quiz-q"><p>1. What does HTML stand for?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q1_0" value="0"> HyperText Makeup Language</label>
+          <label class="quiz-opt"><input type="radio" name="q1_0" value="1"> HyperText Markup Language</label>
+          <label class="quiz-opt"><input type="radio" name="q1_0" value="2"> HighText Markup Language</label>
+        </div></div>
+        <div class="quiz-q"><p>2. Which tag is the largest heading?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q2_0" value="0"> &lt;h6&gt;</label>
+          <label class="quiz-opt"><input type="radio" name="q2_0" value="1"> &lt;head&gt;</label>
+          <label class="quiz-opt"><input type="radio" name="q2_0" value="2"> &lt;h1&gt;</label>
+        </div></div>
+        <div class="quiz-q"><p>3. What does the &lt;body&gt; tag contain?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q3_0" value="0"> Meta information</label>
+          <label class="quiz-opt"><input type="radio" name="q3_0" value="1"> Everything visible on the page</label>
+          <label class="quiz-opt"><input type="radio" name="q3_0" value="2"> CSS styles</label>
+        </div></div>
+        <button class="quiz-submit" onclick="submitQuiz(0,[1,2,1])">Submit Answers</button>
+        <div class="quiz-result" id="quiz-result-0"></div>
+      </div>
+      <div class="lesson-nav">
+        <span></span>
+        <button class="nav-btn nav-btn-next" onclick="goLesson(1)">Next Lesson →</button>
+      </div>
+    </div>
+
+    <!-- LESSON 2 -->
+    <div class="lesson-pane" id="lesson-1">
+      <div class="lesson-tag">Lesson 2 of 10</div>
+      <h1 class="lesson-title">HTML Links, Images &amp; Lists</h1>
+      <div class="lesson-body">
+        <p>Now that you know the basics, let's look at some essential HTML elements you'll use in every webpage.</p>
+        <h3>Links — &lt;a&gt;</h3>
+        <p>Links connect pages together. The <strong>href</strong> attribute tells the browser where to go.</p>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">HTML</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"https://google.com"</span><span class="tag">&gt;</span>Visit Google<span class="tag">&lt;/a&gt;</span>
+<span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"about.html"</span> <span class="attr">target</span>=<span class="val">"_blank"</span><span class="tag">&gt;</span>Open in new tab<span class="tag">&lt;/a&gt;</span></code></pre>
+        </div>
+        <h3>Images — &lt;img&gt;</h3>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">HTML</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="tag">&lt;img</span> <span class="attr">src</span>=<span class="val">"photo.jpg"</span> <span class="attr">alt</span>=<span class="val">"A description"</span> <span class="attr">width</span>=<span class="val">"300"</span><span class="tag">&gt;</span></code></pre>
+        </div>
+        <div class="tip"><strong>💡 Tip:</strong> Always add an <code>alt</code> attribute to images. It helps screen readers and improves accessibility.</div>
+        <h3>Lists</h3>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">HTML</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="cmt">&lt;!-- Unordered (bullets) --&gt;</span>
+<span class="tag">&lt;ul&gt;</span>
+  <span class="tag">&lt;li&gt;</span>HTML<span class="tag">&lt;/li&gt;</span>
+  <span class="tag">&lt;li&gt;</span>CSS<span class="tag">&lt;/li&gt;</span>
+<span class="tag">&lt;/ul&gt;</span>
+
+<span class="cmt">&lt;!-- Ordered (numbers) --&gt;</span>
+<span class="tag">&lt;ol&gt;</span>
+  <span class="tag">&lt;li&gt;</span>Step one<span class="tag">&lt;/li&gt;</span>
+  <span class="tag">&lt;li&gt;</span>Step two<span class="tag">&lt;/li&gt;</span>
+<span class="tag">&lt;/ol&gt;</span></code></pre>
+        </div>
+      </div>
+      <div class="quiz-section">
+        <div class="quiz-title">Quick Quiz — Lesson 2</div>
+        <div class="quiz-q"><p>1. Which attribute specifies the URL of a link?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q1_1" value="0"> src</label>
+          <label class="quiz-opt"><input type="radio" name="q1_1" value="1"> href</label>
+          <label class="quiz-opt"><input type="radio" name="q1_1" value="2"> url</label>
+        </div></div>
+        <div class="quiz-q"><p>2. What does the &lt;img&gt; tag's alt attribute do?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q2_1" value="0"> Sets the image size</label>
+          <label class="quiz-opt"><input type="radio" name="q2_1" value="1"> Provides a text description for accessibility</label>
+          <label class="quiz-opt"><input type="radio" name="q2_1" value="2"> Links the image to another page</label>
+        </div></div>
+        <div class="quiz-q"><p>3. Which tag creates a numbered list?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q3_1" value="0"> &lt;ul&gt;</label>
+          <label class="quiz-opt"><input type="radio" name="q3_1" value="1"> &lt;li&gt;</label>
+          <label class="quiz-opt"><input type="radio" name="q3_1" value="2"> &lt;ol&gt;</label>
+        </div></div>
+        <button class="quiz-submit" onclick="submitQuiz(1,[1,1,2])">Submit Answers</button>
+        <div class="quiz-result" id="quiz-result-1"></div>
+      </div>
+      <div class="lesson-nav">
+        <button class="nav-btn nav-btn-prev" onclick="goLesson(0)">← Previous</button>
+        <button class="nav-btn nav-btn-next" onclick="goLesson(2)">Next Lesson →</button>
+      </div>
+    </div>
+
+    <!-- LESSON 3 -->
+    <div class="lesson-pane" id="lesson-2">
+      <div class="lesson-tag">Lesson 3 of 10</div>
+      <h1 class="lesson-title">Introduction to CSS</h1>
+      <div class="lesson-body">
+        <p><strong>CSS</strong> (Cascading Style Sheets) controls how HTML elements look — colors, fonts, sizes, spacing, and layout.</p>
+        <h3>How to add CSS</h3>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">HTML + CSS</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="cmt">&lt;!-- In the &lt;head&gt; of your HTML --&gt;</span>
+<span class="tag">&lt;style&gt;</span>
+  <span class="kw">h1</span> {
+    <span class="attr">color</span>: <span class="val">blue</span>;
+    <span class="attr">font-size</span>: <span class="val">32px</span>;
+  }
+  <span class="kw">p</span> {
+    <span class="attr">color</span>: <span class="val">#666</span>;
+    <span class="attr">line-height</span>: <span class="val">1.6</span>;
+  }
+<span class="tag">&lt;/style&gt;</span></code></pre>
+        </div>
+        <h3>CSS Selectors</h3>
+        <ul>
+          <li><strong>Tag selector</strong> — targets all elements of that type: <code>p { }</code></li>
+          <li><strong>Class selector</strong> — targets elements with a class: <code>.myClass { }</code></li>
+          <li><strong>ID selector</strong> — targets one specific element: <code>#myId { }</code></li>
+        </ul>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">CSS</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="cmt">/* Class selector */</span>
+<span class="kw">.highlight</span> {
+  <span class="attr">background</span>: <span class="val">yellow</span>;
+  <span class="attr">padding</span>: <span class="val">5px</span>;
+}
+
+<span class="cmt">/* ID selector */</span>
+<span class="kw">#header</span> {
+  <span class="attr">background</span>: <span class="val">#2563eb</span>;
+  <span class="attr">color</span>: <span class="val">white</span>;
+}</code></pre>
+        </div>
+        <div class="tip"><strong>💡 Tip:</strong> Use classes (.) for styles you'll reuse on multiple elements. Use IDs (#) for unique elements like a navigation bar or footer.</div>
+      </div>
+      <div class="quiz-section">
+        <div class="quiz-title">Quick Quiz — Lesson 3</div>
+        <div class="quiz-q"><p>1. What does CSS stand for?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q1_2" value="0"> Colorful Style Sheets</label>
+          <label class="quiz-opt"><input type="radio" name="q1_2" value="1"> Cascading Style Sheets</label>
+          <label class="quiz-opt"><input type="radio" name="q1_2" value="2"> Creative Style System</label>
+        </div></div>
+        <div class="quiz-q"><p>2. How do you select an element with class "box"?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q2_2" value="0"> #box { }</label>
+          <label class="quiz-opt"><input type="radio" name="q2_2" value="1"> box { }</label>
+          <label class="quiz-opt"><input type="radio" name="q2_2" value="2"> .box { }</label>
+        </div></div>
+        <div class="quiz-q"><p>3. Which CSS property changes text color?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q3_2" value="0"> font-color</label>
+          <label class="quiz-opt"><input type="radio" name="q3_2" value="1"> color</label>
+          <label class="quiz-opt"><input type="radio" name="q3_2" value="2"> text-color</label>
+        </div></div>
+        <button class="quiz-submit" onclick="submitQuiz(2,[1,2,1])">Submit Answers</button>
+        <div class="quiz-result" id="quiz-result-2"></div>
+      </div>
+      <div class="lesson-nav">
+        <button class="nav-btn nav-btn-prev" onclick="goLesson(1)">← Previous</button>
+        <button class="nav-btn nav-btn-next" onclick="goLesson(3)">Next Lesson →</button>
+      </div>
+    </div>
+
+    <!-- LESSON 4 -->
+    <div class="lesson-pane" id="lesson-3">
+      <div class="lesson-tag">Lesson 4 of 10</div>
+      <h1 class="lesson-title">The CSS Box Model</h1>
+      <div class="lesson-body">
+        <p>Every HTML element is a rectangular box. The <strong>box model</strong> describes the space that element takes up — content, padding, border, and margin.</p>
+        <h3>Box Model Layers</h3>
+        <ul>
+          <li><strong>Content</strong> — The actual text or image inside the element</li>
+          <li><strong>Padding</strong> — Space between content and the border (inside)</li>
+          <li><strong>Border</strong> — A line around the padding</li>
+          <li><strong>Margin</strong> — Space outside the border (between elements)</li>
+        </ul>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">CSS</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="kw">.card</span> {
+  <span class="attr">width</span>: <span class="val">300px</span>;
+  <span class="attr">padding</span>: <span class="val">20px</span>;        <span class="cmt">/* inner space */</span>
+  <span class="attr">border</span>: <span class="val">2px solid #ccc</span>; <span class="cmt">/* border line */</span>
+  <span class="attr">margin</span>: <span class="val">16px</span>;        <span class="cmt">/* outer space */</span>
+  <span class="attr">border-radius</span>: <span class="val">8px</span>; <span class="cmt">/* rounded corners */</span>
+}</code></pre>
+        </div>
+        <div class="tip"><strong>💡 Tip:</strong> Use <code>box-sizing: border-box;</code> in your CSS reset to make width calculations simpler. This way padding and border are included in the total width.</div>
+        <h3>Display Property</h3>
+        <p>The <code>display</code> property controls how an element behaves in the layout:</p>
+        <ul>
+          <li><strong>block</strong> — takes full width, starts on a new line (div, p, h1)</li>
+          <li><strong>inline</strong> — only takes up as much width as needed (span, a)</li>
+          <li><strong>flex</strong> — powerful layout system for rows/columns</li>
+        </ul>
+      </div>
+      <div class="quiz-section">
+        <div class="quiz-title">Quick Quiz — Lesson 4</div>
+        <div class="quiz-q"><p>1. What is padding?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q1_3" value="0"> Space outside the border</label>
+          <label class="quiz-opt"><input type="radio" name="q1_3" value="1"> Space between content and the border</label>
+          <label class="quiz-opt"><input type="radio" name="q1_3" value="2"> The border thickness</label>
+        </div></div>
+        <div class="quiz-q"><p>2. Which property adds rounded corners?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q2_3" value="0"> corner-radius</label>
+          <label class="quiz-opt"><input type="radio" name="q2_3" value="1"> border-round</label>
+          <label class="quiz-opt"><input type="radio" name="q2_3" value="2"> border-radius</label>
+        </div></div>
+        <div class="quiz-q"><p>3. Which display value starts a new line?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q3_3" value="0"> inline</label>
+          <label class="quiz-opt"><input type="radio" name="q3_3" value="1"> block</label>
+          <label class="quiz-opt"><input type="radio" name="q3_3" value="2"> flex</label>
+        </div></div>
+        <button class="quiz-submit" onclick="submitQuiz(3,[1,2,1])">Submit Answers</button>
+        <div class="quiz-result" id="quiz-result-3"></div>
+      </div>
+      <div class="lesson-nav">
+        <button class="nav-btn nav-btn-prev" onclick="goLesson(2)">← Previous</button>
+        <button class="nav-btn nav-btn-next" onclick="goLesson(4)">Next Lesson →</button>
+      </div>
+    </div>
+
+    <!-- LESSON 5 -->
+    <div class="lesson-pane" id="lesson-4">
+      <div class="lesson-tag">Lesson 5 of 10</div>
+      <h1 class="lesson-title">CSS Flexbox</h1>
+      <div class="lesson-body">
+        <p><strong>Flexbox</strong> is a CSS layout system that makes it easy to align and distribute elements in a row or column.</p>
+        <h3>Basic Flexbox</h3>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">CSS</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="kw">.container</span> {
+  <span class="attr">display</span>: <span class="val">flex</span>;
+  <span class="attr">justify-content</span>: <span class="val">space-between</span>; <span class="cmt">/* horizontal align */</span>
+  <span class="attr">align-items</span>: <span class="val">center</span>;          <span class="cmt">/* vertical align */</span>
+  <span class="attr">gap</span>: <span class="val">16px</span>;                    <span class="cmt">/* space between items */</span>
+}</code></pre>
+        </div>
+        <h3>justify-content values</h3>
+        <ul>
+          <li><strong>flex-start</strong> — items align to the left</li>
+          <li><strong>flex-end</strong> — items align to the right</li>
+          <li><strong>center</strong> — items are centered</li>
+          <li><strong>space-between</strong> — equal space between items</li>
+          <li><strong>space-around</strong> — equal space around items</li>
+        </ul>
+        <h3>Flex Direction</h3>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">CSS</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="kw">.column-layout</span> {
+  <span class="attr">display</span>: <span class="val">flex</span>;
+  <span class="attr">flex-direction</span>: <span class="val">column</span>; <span class="cmt">/* stack vertically */</span>
+  <span class="attr">gap</span>: <span class="val">12px</span>;
+}</code></pre>
+        </div>
+        <div class="tip"><strong>💡 Tip:</strong> Flexbox is one of the most used CSS features. Master it and you can build almost any layout you can imagine!</div>
+      </div>
+      <div class="quiz-section">
+        <div class="quiz-title">Quick Quiz — Lesson 5</div>
+        <div class="quiz-q"><p>1. Which property activates Flexbox?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q1_4" value="0"> layout: flex</label>
+          <label class="quiz-opt"><input type="radio" name="q1_4" value="1"> display: flex</label>
+          <label class="quiz-opt"><input type="radio" name="q1_4" value="2"> position: flex</label>
+        </div></div>
+        <div class="quiz-q"><p>2. Which property aligns items horizontally in flexbox?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q2_4" value="0"> align-items</label>
+          <label class="quiz-opt"><input type="radio" name="q2_4" value="1"> flex-align</label>
+          <label class="quiz-opt"><input type="radio" name="q2_4" value="2"> justify-content</label>
+        </div></div>
+        <div class="quiz-q"><p>3. What value of flex-direction stacks items vertically?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q3_4" value="0"> vertical</label>
+          <label class="quiz-opt"><input type="radio" name="q3_4" value="1"> column</label>
+          <label class="quiz-opt"><input type="radio" name="q3_4" value="2"> stack</label>
+        </div></div>
+        <button class="quiz-submit" onclick="submitQuiz(4,[1,2,1])">Submit Answers</button>
+        <div class="quiz-result" id="quiz-result-4"></div>
+      </div>
+      <div class="lesson-nav">
+        <button class="nav-btn nav-btn-prev" onclick="goLesson(3)">← Previous</button>
+        <button class="nav-btn nav-btn-next" onclick="goLesson(5)">Next Lesson →</button>
+      </div>
+    </div>
+
+    <!-- LESSON 6 -->
+    <div class="lesson-pane" id="lesson-5">
+      <div class="lesson-tag">Lesson 6 of 10</div>
+      <h1 class="lesson-title">Responsive Design &amp; Media Queries</h1>
+      <div class="lesson-body">
+        <p>A <strong>responsive website</strong> looks good on all screen sizes — phone, tablet, and desktop. CSS Media Queries let you apply different styles based on the screen width.</p>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">CSS</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="cmt">/* Default (desktop) styles */</span>
+<span class="kw">.container</span> {
+  <span class="attr">display</span>: <span class="val">flex</span>;
+  <span class="attr">gap</span>: <span class="val">2rem</span>;
+}
+
+<span class="cmt">/* Tablet and below */</span>
+<span class="kw">@media (max-width: 768px)</span> {
+  <span class="kw">.container</span> {
+    <span class="attr">flex-direction</span>: <span class="val">column</span>;
+  }
+}
+
+<span class="cmt">/* Mobile only */</span>
+<span class="kw">@media (max-width: 480px)</span> {
+  <span class="kw">h1</span> {
+    <span class="attr">font-size</span>: <span class="val">24px</span>;
+  }
+}</code></pre>
+        </div>
+        <div class="tip"><strong>💡 Tip:</strong> Always add <code>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</code> in your HTML head — without it, media queries won't work correctly on mobile.</div>
+        <h3>Common Breakpoints</h3>
+        <ul>
+          <li><strong>480px</strong> — Small phones</li>
+          <li><strong>768px</strong> — Tablets</li>
+          <li><strong>1024px</strong> — Laptops</li>
+          <li><strong>1200px+</strong> — Large desktops</li>
+        </ul>
+      </div>
+      <div class="quiz-section">
+        <div class="quiz-title">Quick Quiz — Lesson 6</div>
+        <div class="quiz-q"><p>1. What is a media query used for?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q1_5" value="0"> To play videos</label>
+          <label class="quiz-opt"><input type="radio" name="q1_5" value="1"> To apply styles based on screen size</label>
+          <label class="quiz-opt"><input type="radio" name="q1_5" value="2"> To query a database</label>
+        </div></div>
+        <div class="quiz-q"><p>2. Which max-width is commonly used for tablets?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q2_5" value="0"> 480px</label>
+          <label class="quiz-opt"><input type="radio" name="q2_5" value="1"> 768px</label>
+          <label class="quiz-opt"><input type="radio" name="q2_5" value="2"> 1200px</label>
+        </div></div>
+        <div class="quiz-q"><p>3. What meta tag is required for responsive design on mobile?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q3_5" value="0"> meta charset</label>
+          <label class="quiz-opt"><input type="radio" name="q3_5" value="1"> meta responsive</label>
+          <label class="quiz-opt"><input type="radio" name="q3_5" value="2"> meta viewport</label>
+        </div></div>
+        <button class="quiz-submit" onclick="submitQuiz(5,[1,1,2])">Submit Answers</button>
+        <div class="quiz-result" id="quiz-result-5"></div>
+      </div>
+      <div class="lesson-nav">
+        <button class="nav-btn nav-btn-prev" onclick="goLesson(4)">← Previous</button>
+        <button class="nav-btn nav-btn-next" onclick="goLesson(6)">Next Lesson →</button>
+      </div>
+    </div>
+
+    <!-- LESSON 7 -->
+    <div class="lesson-pane" id="lesson-6">
+      <div class="lesson-tag">Lesson 7 of 10</div>
+      <h1 class="lesson-title">HTML Forms</h1>
+      <div class="lesson-body">
+        <p>Forms let users enter data — login pages, contact forms, search bars. The <code>&lt;form&gt;</code> element wraps all input elements.</p>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">HTML</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="tag">&lt;form</span> <span class="attr">action</span>=<span class="val">"/submit"</span> <span class="attr">method</span>=<span class="val">"post"</span><span class="tag">&gt;</span>
+
+  <span class="tag">&lt;label</span> <span class="attr">for</span>=<span class="val">"name"</span><span class="tag">&gt;</span>Your Name<span class="tag">&lt;/label&gt;</span>
+  <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="val">"text"</span> <span class="attr">id</span>=<span class="val">"name"</span> <span class="attr">placeholder</span>=<span class="val">"John"</span><span class="tag">&gt;</span>
+
+  <span class="tag">&lt;label</span> <span class="attr">for</span>=<span class="val">"email"</span><span class="tag">&gt;</span>Email<span class="tag">&lt;/label&gt;</span>
+  <span class="tag">&lt;input</span> <span class="attr">type</span>=<span class="val">"email"</span> <span class="attr">id</span>=<span class="val">"email"</span> <span class="attr">required</span><span class="tag">&gt;</span>
+
+  <span class="tag">&lt;textarea</span> <span class="attr">rows</span>=<span class="val">"4"</span> <span class="attr">placeholder</span>=<span class="val">"Your message..."</span><span class="tag">&gt;&lt;/textarea&gt;</span>
+
+  <span class="tag">&lt;button</span> <span class="attr">type</span>=<span class="val">"submit"</span><span class="tag">&gt;</span>Send<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;/form&gt;</span></code></pre>
+        </div>
+        <h3>Common Input Types</h3>
+        <ul>
+          <li><strong>text</strong> — single line text</li>
+          <li><strong>email</strong> — validates email format</li>
+          <li><strong>password</strong> — hides characters</li>
+          <li><strong>number</strong> — only numbers allowed</li>
+          <li><strong>checkbox</strong> — tick box</li>
+          <li><strong>radio</strong> — pick one from a group</li>
+        </ul>
+      </div>
+      <div class="quiz-section">
+        <div class="quiz-title">Quick Quiz — Lesson 7</div>
+        <div class="quiz-q"><p>1. Which tag wraps all form inputs?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q1_6" value="0"> &lt;input&gt;</label>
+          <label class="quiz-opt"><input type="radio" name="q1_6" value="1"> &lt;form&gt;</label>
+          <label class="quiz-opt"><input type="radio" name="q1_6" value="2"> &lt;div&gt;</label>
+        </div></div>
+        <div class="quiz-q"><p>2. Which input type validates email format automatically?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q2_6" value="0"> type="text"</label>
+          <label class="quiz-opt"><input type="radio" name="q2_6" value="1"> type="email"</label>
+          <label class="quiz-opt"><input type="radio" name="q2_6" value="2"> type="mail"</label>
+        </div></div>
+        <div class="quiz-q"><p>3. Which attribute makes a field required?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q3_6" value="0"> mandatory</label>
+          <label class="quiz-opt"><input type="radio" name="q3_6" value="1"> required</label>
+          <label class="quiz-opt"><input type="radio" name="q3_6" value="2"> necessary</label>
+        </div></div>
+        <button class="quiz-submit" onclick="submitQuiz(6,[1,1,1])">Submit Answers</button>
+        <div class="quiz-result" id="quiz-result-6"></div>
+      </div>
+      <div class="lesson-nav">
+        <button class="nav-btn nav-btn-prev" onclick="goLesson(5)">← Previous</button>
+        <button class="nav-btn nav-btn-next" onclick="goLesson(7)">Next Lesson →</button>
+      </div>
+    </div>
+
+    <!-- LESSON 8 -->
+    <div class="lesson-pane" id="lesson-7">
+      <div class="lesson-tag">Lesson 8 of 10</div>
+      <h1 class="lesson-title">CSS Grid</h1>
+      <div class="lesson-body">
+        <p><strong>CSS Grid</strong> is a two-dimensional layout system — it handles both rows and columns at the same time. It's perfect for page layouts and card grids.</p>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">CSS</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="kw">.grid</span> {
+  <span class="attr">display</span>: <span class="val">grid</span>;
+  <span class="attr">grid-template-columns</span>: <span class="val">1fr 1fr 1fr</span>; <span class="cmt">/* 3 equal columns */</span>
+  <span class="attr">gap</span>: <span class="val">20px</span>;
+}
+
+<span class="cmt">/* Auto-fill: as many columns as fit */</span>
+<span class="kw">.auto-grid</span> {
+  <span class="attr">display</span>: <span class="val">grid</span>;
+  <span class="attr">grid-template-columns</span>: <span class="val">repeat(auto-fill, minmax(250px, 1fr))</span>;
+  <span class="attr">gap</span>: <span class="val">16px</span>;
+}</code></pre>
+        </div>
+        <div class="tip"><strong>💡 Tip:</strong> <code>repeat(auto-fill, minmax(250px, 1fr))</code> is a magic one-liner — it creates as many columns as the screen allows, each at least 250px wide. Great for responsive card grids!</div>
+        <h3>Grid vs Flexbox</h3>
+        <ul>
+          <li>Use <strong>Flexbox</strong> for 1D layouts (single row or column)</li>
+          <li>Use <strong>Grid</strong> for 2D layouts (rows AND columns)</li>
+        </ul>
+      </div>
+      <div class="quiz-section">
+        <div class="quiz-title">Quick Quiz — Lesson 8</div>
+        <div class="quiz-q"><p>1. What does "1fr" mean in CSS Grid?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q1_7" value="0"> 1 fixed pixel</label>
+          <label class="quiz-opt"><input type="radio" name="q1_7" value="1"> 1 fraction of available space</label>
+          <label class="quiz-opt"><input type="radio" name="q1_7" value="2"> 1 font-relative unit</label>
+        </div></div>
+        <div class="quiz-q"><p>2. How do you activate CSS Grid?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q2_7" value="0"> display: grid-layout</label>
+          <label class="quiz-opt"><input type="radio" name="q2_7" value="1"> display: grid</label>
+          <label class="quiz-opt"><input type="radio" name="q2_7" value="2"> layout: grid</label>
+        </div></div>
+        <div class="quiz-q"><p>3. When should you use Grid over Flexbox?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q3_7" value="0"> For single row layouts</label>
+          <label class="quiz-opt"><input type="radio" name="q3_7" value="1"> For 2D layouts with rows and columns</label>
+          <label class="quiz-opt"><input type="radio" name="q3_7" value="2"> For text styling</label>
+        </div></div>
+        <button class="quiz-submit" onclick="submitQuiz(7,[1,1,1])">Submit Answers</button>
+        <div class="quiz-result" id="quiz-result-7"></div>
+      </div>
+      <div class="lesson-nav">
+        <button class="nav-btn nav-btn-prev" onclick="goLesson(6)">← Previous</button>
+        <button class="nav-btn nav-btn-next" onclick="goLesson(8)">Next Lesson →</button>
+      </div>
+    </div>
+
+    <!-- LESSON 9 -->
+    <div class="lesson-pane" id="lesson-8">
+      <div class="lesson-tag">Lesson 9 of 10</div>
+      <h1 class="lesson-title">CSS Variables &amp; Transitions</h1>
+      <div class="lesson-body">
+        <p><strong>CSS Variables</strong> (custom properties) let you store values you reuse across your stylesheet. Change it in one place and it updates everywhere.</p>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">CSS</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="cmt">/* Define variables */</span>
+<span class="kw">:root</span> {
+  <span class="attr">--primary</span>: <span class="val">#2563eb</span>;
+  <span class="attr">--text</span>: <span class="val">#0f172a</span>;
+  <span class="attr">--radius</span>: <span class="val">8px</span>;
+}
+
+<span class="cmt">/* Use variables */</span>
+<span class="kw">.button</span> {
+  <span class="attr">background</span>: <span class="val">var(--primary)</span>;
+  <span class="attr">border-radius</span>: <span class="val">var(--radius)</span>;
+  <span class="attr">color</span>: <span class="val">white</span>;
+}</code></pre>
+        </div>
+        <h3>CSS Transitions</h3>
+        <p>Transitions make property changes animate smoothly instead of jumping instantly.</p>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">CSS</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="kw">.button</span> {
+  <span class="attr">background</span>: <span class="val">#2563eb</span>;
+  <span class="attr">transition</span>: <span class="val">background 0.3s, transform 0.2s</span>;
+}
+
+<span class="kw">.button:hover</span> {
+  <span class="attr">background</span>: <span class="val">#1d4ed8</span>;
+  <span class="attr">transform</span>: <span class="val">translateY(-2px)</span>; <span class="cmt">/* lift up */</span>
+}</code></pre>
+        </div>
+        <div class="tip"><strong>💡 Tip:</strong> Transitions make your website feel polished and professional. Even a simple 0.2s transition on hover makes a huge difference!</div>
+      </div>
+      <div class="quiz-section">
+        <div class="quiz-title">Quick Quiz — Lesson 9</div>
+        <div class="quiz-q"><p>1. Where do you define CSS variables?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q1_8" value="0"> In the body selector</label>
+          <label class="quiz-opt"><input type="radio" name="q1_8" value="1"> In the :root selector</label>
+          <label class="quiz-opt"><input type="radio" name="q1_8" value="2"> In the HTML file</label>
+        </div></div>
+        <div class="quiz-q"><p>2. How do you use a CSS variable called --color?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q2_8" value="0"> $color</label>
+          <label class="quiz-opt"><input type="radio" name="q2_8" value="1"> variable(--color)</label>
+          <label class="quiz-opt"><input type="radio" name="q2_8" value="2"> var(--color)</label>
+        </div></div>
+        <div class="quiz-q"><p>3. What does the transition property do?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q3_8" value="0"> Moves elements around the page</label>
+          <label class="quiz-opt"><input type="radio" name="q3_8" value="1"> Animates property changes smoothly</label>
+          <label class="quiz-opt"><input type="radio" name="q3_8" value="2"> Creates a loading animation</label>
+        </div></div>
+        <button class="quiz-submit" onclick="submitQuiz(8,[1,2,1])">Submit Answers</button>
+        <div class="quiz-result" id="quiz-result-8"></div>
+      </div>
+      <div class="lesson-nav">
+        <button class="nav-btn nav-btn-prev" onclick="goLesson(7)">← Previous</button>
+        <button class="nav-btn nav-btn-next" onclick="goLesson(9)">Next Lesson →</button>
+      </div>
+    </div>
+
+    <!-- LESSON 10 -->
+    <div class="lesson-pane" id="lesson-9">
+      <div class="lesson-tag">Lesson 10 of 10</div>
+      <h1 class="lesson-title">Build a Complete Web Page</h1>
+      <div class="lesson-body">
+        <p>In this final lesson, we bring everything together. Here's a complete mini webpage using everything you've learned.</p>
+        <div class="code-block">
+          <div class="code-header"><span class="code-lang">HTML + CSS</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div>
+          <pre><code><span class="tag">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;html&gt;</span>
+<span class="tag">&lt;head&gt;</span>
+  <span class="tag">&lt;meta</span> <span class="attr">charset</span>=<span class="val">"UTF-8"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;meta</span> <span class="attr">name</span>=<span class="val">"viewport"</span> <span class="attr">content</span>=<span class="val">"width=device-width, initial-scale=1"</span><span class="tag">&gt;</span>
+  <span class="tag">&lt;title&gt;</span>My Portfolio<span class="tag">&lt;/title&gt;</span>
+  <span class="tag">&lt;style&gt;</span>
+    <span class="kw">:root</span> { <span class="attr">--blue</span>: <span class="val">#2563eb</span>; }
+    <span class="kw">body</span> { <span class="attr">font-family</span>: <span class="val">sans-serif</span>; <span class="attr">margin</span>: <span class="val">0</span>; }
+    <span class="kw">nav</span> { <span class="attr">background</span>: <span class="val">var(--blue)</span>; <span class="attr">color</span>: <span class="val">white</span>; <span class="attr">padding</span>: <span class="val">1rem 2rem</span>; <span class="attr">display</span>: <span class="val">flex</span>; <span class="attr">justify-content</span>: <span class="val">space-between</span>; }
+    <span class="kw">.hero</span> { <span class="attr">text-align</span>: <span class="val">center</span>; <span class="attr">padding</span>: <span class="val">4rem 2rem</span>; }
+    <span class="kw">.cards</span> { <span class="attr">display</span>: <span class="val">grid</span>; <span class="attr">grid-template-columns</span>: <span class="val">repeat(auto-fill, minmax(200px,1fr))</span>; <span class="attr">gap</span>: <span class="val">1rem</span>; <span class="attr">padding</span>: <span class="val">2rem</span>; }
+    <span class="kw">.card</span> { <span class="attr">border</span>: <span class="val">1px solid #ddd</span>; <span class="attr">border-radius</span>: <span class="val">8px</span>; <span class="attr">padding</span>: <span class="val">1.5rem</span>; <span class="attr">transition</span>: <span class="val">transform 0.2s</span>; }
+    <span class="kw">.card:hover</span> { <span class="attr">transform</span>: <span class="val">translateY(-4px)</span>; }
+    <span class="kw">@media (max-width: 600px)</span> { <span class="kw">.hero h1</span> { <span class="attr">font-size</span>: <span class="val">24px</span>; } }
+  <span class="tag">&lt;/style&gt;</span>
+<span class="tag">&lt;/head&gt;</span>
+<span class="tag">&lt;body&gt;</span>
+  <span class="tag">&lt;nav&gt;&lt;span&gt;</span>MyPortfolio<span class="tag">&lt;/span&gt;&lt;a</span> <span class="attr">href</span>=<span class="val">"#"</span> <span class="attr">style</span>=<span class="val">"color:white"</span><span class="tag">&gt;</span>Contact<span class="tag">&lt;/a&gt;&lt;/nav&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"hero"</span><span class="tag">&gt;&lt;h1&gt;</span>Welcome to My Site<span class="tag">&lt;/h1&gt;&lt;p&gt;</span>I build cool things.<span class="tag">&lt;/p&gt;&lt;/div&gt;</span>
+  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"cards"</span><span class="tag">&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"card"</span><span class="tag">&gt;&lt;h3&gt;</span>Project 1<span class="tag">&lt;/h3&gt;&lt;p&gt;</span>Description here.<span class="tag">&lt;/p&gt;&lt;/div&gt;</span>
+    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"card"</span><span class="tag">&gt;&lt;h3&gt;</span>Project 2<span class="tag">&lt;/h3&gt;&lt;p&gt;</span>Description here.<span class="tag">&lt;/p&gt;&lt;/div&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/body&gt;</span>
+<span class="tag">&lt;/html&gt;</span></code></pre>
+        </div>
+        <div class="tip"><strong>🎉 Congratulations!</strong> You've completed the HTML &amp; CSS Fundamentals course. You now know everything you need to build real websites. Keep practicing and building!</div>
+      </div>
+      <div class="quiz-section">
+        <div class="quiz-title">Final Quiz — Lesson 10</div>
+        <div class="quiz-q"><p>1. Which meta tag enables responsive design?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q1_9" value="0"> meta charset</label>
+          <label class="quiz-opt"><input type="radio" name="q1_9" value="1"> meta viewport</label>
+          <label class="quiz-opt"><input type="radio" name="q1_9" value="2"> meta theme-color</label>
+        </div></div>
+        <div class="quiz-q"><p>2. What CSS creates a card hover lift effect?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q2_9" value="0"> margin-top: -4px</label>
+          <label class="quiz-opt"><input type="radio" name="q2_9" value="1"> transform: translateY(-4px)</label>
+          <label class="quiz-opt"><input type="radio" name="q2_9" value="2"> position: up</label>
+        </div></div>
+        <div class="quiz-q"><p>3. How do you make a grid that auto-fits columns?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q3_9" value="0"> flex: auto</label>
+          <label class="quiz-opt"><input type="radio" name="q3_9" value="1"> grid-template-columns: repeat(auto-fill, minmax(200px,1fr))</label>
+          <label class="quiz-opt"><input type="radio" name="q3_9" value="2"> columns: auto</label>
+        </div></div>
+        <button class="quiz-submit" onclick="submitQuiz(9,[1,1,1])">Submit Answers</button>
+        <div class="quiz-result" id="quiz-result-9"></div>
+      </div>
+      <div id="cert-section" class="cert-section" style="display:none;">
+        <div style="font-size:48px;margin-bottom:.5rem;">🏆</div>
+        <h2>Course Complete!</h2>
+        <p>You've finished all 10 lessons of HTML &amp; CSS Fundamentals. Download your certificate below.</p>
+        <button class="cert-btn" onclick="downloadCertificate()">Download Certificate</button>
+        <canvas id="certCanvas" width="900" height="620"></canvas>
+      </div>
+      <div class="lesson-nav">
+        <button class="nav-btn nav-btn-prev" onclick="goLesson(8)">← Previous</button>
+        <a href="courses.html" class="nav-btn nav-btn-next" style="text-decoration:none;">Back to Courses</a>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const COURSE_ID = 'html';
+const TOTAL = 10;
+let progress = JSON.parse(localStorage.getItem('course_' + COURSE_ID) || '{"completed":0,"lessons":{}}');
+
+const titles = ['What is HTML?','Links, Images & Lists','Introduction to CSS','The CSS Box Model','CSS Flexbox','Responsive Design','HTML Forms','CSS Grid','Variables & Transitions','Build a Complete Page'];
+
+function renderSidebar() {
+  const list = document.getElementById('lessonList');
+  list.innerHTML = titles.map((t, i) => `
+    <div class="lesson-item ${progress.lessons[i] ? 'done' : ''}" id="nav-${i}" onclick="goLesson(${i})">
+      <div class="lesson-num">${progress.lessons[i] ? '✓' : i+1}</div>
+      ${t}
+    </div>`).join('');
+  updateProgress();
+}
+
+function updateProgress() {
+  const pct = Math.round((progress.completed / TOTAL) * 100);
+  document.getElementById('topbarFill').style.width = pct + '%';
+  document.getElementById('topbarPct').textContent = pct + '%';
+  document.getElementById('sidebarPct').textContent = progress.completed + ' of ' + TOTAL + ' lessons complete';
+  if (progress.completed === TOTAL) {
+    document.getElementById('cert-section').style.display = 'block';
+  }
+}
+
+function goLesson(i) {
+  document.querySelectorAll('.lesson-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.lesson-item').forEach(p => p.classList.remove('active'));
+  document.getElementById('lesson-' + i).classList.add('active');
+  const nav = document.getElementById('nav-' + i);
+  if (nav) nav.classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+  if (!progress.lessons[i]) {
+    progress.lessons[i] = true;
+    progress.completed = Object.keys(progress.lessons).length;
+    localStorage.setItem('course_' + COURSE_ID, JSON.stringify(progress));
+    renderSidebar();
+  }
+  document.getElementById('nav-' + i).classList.add('active');
+}
+
+function submitQuiz(lessonIdx, answers) {
+  let score = 0;
+  answers.forEach((correct, qi) => {
+    const selected = document.querySelector(`input[name="q${qi+1}_${lessonIdx}"]:checked`);
+    const opts = document.querySelectorAll(`input[name="q${qi+1}_${lessonIdx}"]`);
+    opts.forEach(o => {
+      const lbl = o.closest('.quiz-opt');
+      lbl.style.pointerEvents = 'none';
+      if (parseInt(o.value) === correct) lbl.classList.add('correct');
+    });
+    if (selected && parseInt(selected.value) === correct) {
+      score++;
+    } else if (selected) {
+      selected.closest('.quiz-opt').classList.add('wrong');
+    }
+  });
+  const res = document.getElementById('quiz-result-' + lessonIdx);
+  if (score === answers.length) {
+    res.className = 'quiz-result pass';
+    res.textContent = '✅ Perfect! ' + score + '/' + answers.length + ' correct. Great work!';
+  } else {
+    res.className = 'quiz-result fail';
+    res.textContent = '❌ ' + score + '/' + answers.length + ' correct. Review the lesson and try again.';
+  }
+}
+
+function copyCode(btn) {
+  const code = btn.closest('.code-block').querySelector('code').innerText;
+  navigator.clipboard.writeText(code).then(() => { btn.textContent = 'Copied!'; setTimeout(() => btn.textContent = 'Copy', 2000); });
+}
+
+function downloadCertificate() {
+  const canvas = document.getElementById('certCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = 900, H = 620;
+  ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 8; ctx.strokeRect(20,20,W-40,H-40);
+  ctx.strokeStyle = '#bfdbfe'; ctx.lineWidth = 2; ctx.strokeRect(32,32,W-64,H-64);
+  ctx.fillStyle = '#2563eb'; ctx.fillRect(0,0,W,80);
+  ctx.fillStyle = '#ffffff'; ctx.font = 'bold 28px DM Mono, monospace'; ctx.textAlign = 'center'; ctx.fillText('Elham.dev — Certificate of Completion', W/2, 52);
+  ctx.fillStyle = '#0f172a'; ctx.font = '18px sans-serif'; ctx.fillText('This is to certify that', W/2, 150);
+  const name = prompt('Enter your name for the certificate:', 'Student Name') || 'Student';
+  ctx.font = 'bold 42px serif'; ctx.fillStyle = '#2563eb'; ctx.fillText(name, W/2, 220);
+  ctx.fillStyle = '#475569'; ctx.font = '18px sans-serif'; ctx.fillText('has successfully completed the course', W/2, 270);
+  ctx.fillStyle = '#0f172a'; ctx.font = 'bold 28px sans-serif'; ctx.fillText('HTML & CSS Fundamentals', W/2, 320);
+  ctx.fillStyle = '#475569'; ctx.font = '15px sans-serif'; ctx.fillText('10 Lessons · All Quizzes Passed · ' + new Date().toLocaleDateString('en-GB',{year:'numeric',month:'long',day:'numeric'}), W/2, 360);
+  ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(200,400); ctx.lineTo(700,400); ctx.stroke();
+  ctx.fillStyle = '#2563eb'; ctx.font = 'bold 16px DM Mono, monospace'; ctx.fillText('Elhamuddin Andarabi', W/2, 440);
+  ctx.fillStyle = '#94a3b8'; ctx.font = '13px sans-serif'; ctx.fillText('Instructor · Full Stack Developer', W/2, 465);
+  const link = document.createElement('a');
+  link.download = 'HTML-CSS-Certificate.png';
+  link.href = canvas.toDataURL();
+  link.click();
+}
+
+function toggleTheme(){const h=document.documentElement,b=document.getElementById('themeBtn');if(h.getAttribute('data-theme')==='light'){h.setAttribute('data-theme','dark');b.textContent='☀️ Light';}else{h.setAttribute('data-theme','light');b.textContent='🌙 Dark';}}
+
+renderSidebar();
+goLesson(parseInt(Object.keys(progress.lessons).length > 0 ? Math.min(Object.keys(progress.lessons).length, TOTAL-1) : 0));
+</script>
+</body>
+</html>

@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>JavaScript — Elham.dev</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563eb'/><text y='72' x='50' text-anchor='middle' font-size='58' font-family='monospace' font-weight='700' fill='white'>E.</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--blue:#2563eb;--blue-light:#eff6ff;--blue-mid:#bfdbfe;--text-dark:#0f172a;--text-mid:#475569;--text-muted:#94a3b8;--border:#e2e8f0;--bg:#f8fafc;--white:#ffffff;--nav-bg:rgba(255,255,255,0.97);--sidebar-w:280px;--accent:#eab308;}
+[data-theme="dark"]{--blue:#60a5fa;--blue-light:#1e3a5f;--blue-mid:#1e40af;--text-dark:#f1f5f9;--text-mid:#94a3b8;--text-muted:#64748b;--border:#1e293b;--bg:#0f172a;--white:#1e293b;--nav-bg:rgba(15,23,42,0.97);}
+html{scroll-behavior:smooth;}body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text-dark);line-height:1.6;}
+.topbar{position:fixed;top:0;left:0;right:0;height:56px;background:var(--nav-bg);border-bottom:.5px solid var(--border);z-index:200;display:flex;align-items:center;padding:0 1.5rem;gap:1rem;}
+.topbar-back{text-decoration:none;font-size:13px;color:var(--text-mid);display:flex;align-items:center;gap:5px;transition:color .2s;}.topbar-back:hover{color:var(--blue);}
+.topbar-title{font-size:14px;font-weight:600;color:var(--text-dark);font-family:'DM Mono',monospace;flex:1;}
+.topbar-progress{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text-muted);}
+.topbar-bar-bg{width:120px;height:5px;background:var(--border);border-radius:999px;overflow:hidden;}
+.topbar-bar-fill{height:100%;background:linear-gradient(90deg,#eab308,#f59e0b);border-radius:999px;transition:width .5s;}
+.theme-toggle{background:var(--white);border:.5px solid var(--border);border-radius:999px;padding:5px 12px;cursor:pointer;font-size:12px;color:var(--text-mid);font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:5px;}.theme-toggle:hover{border-color:var(--blue);color:var(--blue);}
+.layout{display:flex;margin-top:56px;min-height:calc(100vh - 56px);}
+.sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--white);border-right:.5px solid var(--border);position:fixed;top:56px;bottom:0;overflow-y:auto;transition:transform .3s;}
+.sidebar-header{padding:1.25rem 1.25rem .75rem;border-bottom:.5px solid var(--border);}
+.sidebar-course-name{font-size:13px;font-weight:600;color:var(--text-dark);}
+.sidebar-pct{font-size:11px;color:var(--text-muted);margin-top:3px;}
+.lesson-list{padding:.5rem 0;}
+.lesson-item{display:flex;align-items:center;gap:10px;padding:.65rem 1.25rem;cursor:pointer;font-size:13px;color:var(--text-mid);border-left:2px solid transparent;transition:all .15s;}
+.lesson-item:hover{background:var(--bg);color:var(--text-dark);}
+.lesson-item.active{background:#fefce8;color:#854d0e;border-left-color:#eab308;font-weight:500;}
+[data-theme="dark"] .lesson-item.active{background:#422006;color:#fbbf24;border-left-color:#eab308;}
+.lesson-item.done{color:var(--text-muted);}
+.lesson-item.done .lesson-num{background:#dcfce7;color:#16a34a;}
+[data-theme="dark"] .lesson-item.done .lesson-num{background:#052e16;color:#4ade80;}
+.lesson-num{width:22px;height:22px;border-radius:50%;background:var(--border);color:var(--text-muted);font-size:10px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'DM Mono',monospace;}
+.lesson-item.active .lesson-num{background:#eab308;color:#fff;}
+.main{margin-left:var(--sidebar-w);flex:1;padding:2.5rem 3rem;max-width:820px;}
+.lesson-pane{display:none;}.lesson-pane.active{display:block;}
+.lesson-tag{font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:1.5px;color:#ca8a04;font-family:'DM Mono',monospace;margin-bottom:.5rem;}
+.lesson-title{font-size:26px;font-weight:600;letter-spacing:-.5px;color:var(--text-dark);margin-bottom:1.5rem;}
+.lesson-body h3{font-size:16px;font-weight:600;color:var(--text-dark);margin:1.5rem 0 .6rem;}
+.lesson-body p{font-size:15px;color:var(--text-mid);line-height:1.8;margin-bottom:1rem;}
+.lesson-body ul{padding-left:1.25rem;margin-bottom:1rem;}
+.lesson-body ul li{font-size:15px;color:var(--text-mid);line-height:1.8;margin-bottom:.25rem;}
+.lesson-body strong{color:var(--text-dark);font-weight:600;}
+.code-block{background:#0f172a;border-radius:10px;overflow:hidden;margin:1.25rem 0;}
+[data-theme="dark"] .code-block{background:#020617;border:.5px solid var(--border);}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:.6rem 1rem;border-bottom:.5px solid #1e293b;}
+.code-lang{font-size:11px;font-family:'DM Mono',monospace;color:#64748b;font-weight:500;}
+.code-copy{background:none;border:none;color:#64748b;cursor:pointer;font-size:11px;font-family:'DM Mono',monospace;padding:2px 8px;border-radius:4px;transition:color .2s;}.code-copy:hover{color:#94a3b8;}
+.code-block pre{padding:1.25rem;overflow-x:auto;}
+.code-block code{font-family:'DM Mono',monospace;font-size:13px;line-height:1.7;color:#e2e8f0;}
+.kw{color:#93c5fd;}.str{color:#86efac;}.cmt{color:#64748b;font-style:italic;}.num{color:#fca5a5;}.fn{color:#fde68a;}.bool{color:#f9a8d4;}
+.tip{background:var(--blue-light);border:.5px solid var(--blue-mid);border-radius:10px;padding:1rem 1.25rem;margin:1.25rem 0;font-size:14px;color:var(--text-dark);}
+.tip strong{color:var(--blue);}
+.quiz-section{margin-top:2.5rem;border-top:.5px solid var(--border);padding-top:2rem;}
+.quiz-title{font-size:17px;font-weight:600;color:var(--text-dark);margin-bottom:1.5rem;}
+.quiz-q{margin-bottom:1.5rem;}
+.quiz-q p{font-size:14px;font-weight:500;color:var(--text-dark);margin-bottom:.75rem;}
+.quiz-options{display:flex;flex-direction:column;gap:.5rem;}
+.quiz-opt{display:flex;align-items:center;gap:10px;padding:.7rem 1rem;border:.5px solid var(--border);border-radius:9px;cursor:pointer;font-size:13px;color:var(--text-mid);transition:all .2s;user-select:none;}
+.quiz-opt:hover{border-color:#eab308;background:#fefce8;color:var(--text-dark);}
+.quiz-opt.correct{border-color:#16a34a;background:#dcfce7;color:#166534;}
+.quiz-opt.wrong{border-color:#dc2626;background:#fee2e2;color:#991b1b;}
+[data-theme="dark"] .quiz-opt.correct{background:#052e16;color:#4ade80;border-color:#16a34a;}
+[data-theme="dark"] .quiz-opt.wrong{background:#450a0a;color:#fca5a5;border-color:#dc2626;}
+.quiz-submit{margin-top:1rem;background:#eab308;color:#fff;border:none;padding:11px 28px;border-radius:9px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .2s;}.quiz-submit:hover{opacity:.85;}
+.quiz-result{margin-top:1rem;padding:.85rem 1.1rem;border-radius:9px;font-size:14px;font-weight:500;display:none;}
+.quiz-result.pass{background:#dcfce7;color:#166534;border:.5px solid #bbf7d0;display:block;}
+.quiz-result.fail{background:#fee2e2;color:#991b1b;border:.5px solid #fecaca;display:block;}
+[data-theme="dark"] .quiz-result.pass{background:#052e16;color:#4ade80;}
+[data-theme="dark"] .quiz-result.fail{background:#450a0a;color:#fca5a5;}
+.lesson-nav{display:flex;justify-content:space-between;margin-top:2.5rem;padding-top:1.5rem;border-top:.5px solid var(--border);}
+.nav-btn{padding:11px 24px;border-radius:9px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;transition:all .2s;}
+.nav-btn-prev{background:var(--white);border:.5px solid var(--border);color:var(--text-mid);}.nav-btn-prev:hover{border-color:var(--blue);color:var(--blue);}
+.nav-btn-next{background:#eab308;color:#fff;border:none;}.nav-btn-next:hover{opacity:.88;}
+.cert-section{text-align:center;padding:2rem;background:var(--white);border:.5px solid var(--border);border-radius:16px;margin-top:2rem;}
+.cert-section h2{font-size:22px;font-weight:600;color:var(--text-dark);margin-bottom:.75rem;}
+.cert-section p{font-size:14px;color:var(--text-mid);margin-bottom:1.5rem;}
+.cert-btn{background:linear-gradient(135deg,#eab308,#f59e0b);color:#fff;border:none;padding:13px 32px;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
+canvas#certCanvas{display:none;}
+.sidebar-toggle{display:none;position:fixed;bottom:24px;left:24px;z-index:300;width:44px;height:44px;border-radius:50%;background:#eab308;color:#fff;border:none;font-size:20px;cursor:pointer;box-shadow:0 4px 20px rgba(234,179,8,.4);}
+@media(max-width:768px){.sidebar{transform:translateX(-100%);z-index:150;}.sidebar.open{transform:translateX(0);}.main{margin-left:0;padding:1.5rem 1.25rem;}.sidebar-toggle{display:flex;align-items:center;justify-content:center;}.topbar{padding:0 1rem;}.topbar-bar-bg{width:80px;}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a href="courses.html" class="topbar-back"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Courses</a>
+  <div class="topbar-title">JavaScript Essentials</div>
+  <div class="topbar-progress"><div class="topbar-bar-bg"><div class="topbar-bar-fill" id="topbarFill" style="width:0%"></div></div><span id="topbarPct">0%</span></div>
+  <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌙 Dark</button>
+</div>
+<button class="sidebar-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header"><div class="sidebar-course-name">JavaScript Essentials</div><div class="sidebar-pct" id="sidebarPct">0 of 10 lessons complete</div></div>
+    <div class="lesson-list" id="lessonList"></div>
+  </aside>
+  <main class="main">
+
+    <!-- LESSON 1 -->
+    <div class="lesson-pane active" id="lesson-0">
+      <div class="lesson-tag">Lesson 1 of 10</div>
+      <h1 class="lesson-title">What is JavaScript?</h1>
+      <div class="lesson-body">
+        <p><strong>JavaScript</strong> is the programming language of the web. While HTML builds structure and CSS adds style, JavaScript makes pages <em>interactive</em> — buttons that do things, forms that validate, content that updates without refreshing.</p>
+        <h3>Your first JavaScript</h3>
+        <div class="code-block"><div class="code-header"><span class="code-lang">JavaScript</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div><pre><code><span class="cmt">// This is a comment — JavaScript ignores it</span>
+
+<span class="cmt">// Show a message in the browser</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Hello, World!"</span>);
+
+<span class="cmt">// Show a popup</span>
+<span class="fn">alert</span>(<span class="str">"Welcome to JavaScript!"</span>);
+
+<span class="cmt">// Store a value</span>
+<span class="kw">let</span> name = <span class="str">"Elham"</span>;
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"My name is "</span> + name);</code></pre></div>
+        <h3>Where to write JavaScript</h3>
+        <ul>
+          <li>Inside a <strong>&lt;script&gt;</strong> tag in your HTML file</li>
+          <li>In a separate <strong>.js</strong> file linked with <code>&lt;script src="app.js"&gt;&lt;/script&gt;</code></li>
+          <li>In the browser <strong>Console</strong> tab (great for testing)</li>
+        </ul>
+        <div class="tip"><strong>💡 Tip:</strong> Open your browser DevTools (F12 or right-click → Inspect → Console) and type <code>console.log("Hello!")</code> — this is where JavaScript developers spend a lot of time debugging!</div>
+      </div>
+      <div class="quiz-section">
+        <div class="quiz-title">Quick Quiz — Lesson 1</div>
+        <div class="quiz-q"><p>1. What does JavaScript primarily add to websites?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q1_0" value="0"> Structure</label>
+          <label class="quiz-opt"><input type="radio" name="q1_0" value="1"> Interactivity</label>
+          <label class="quiz-opt"><input type="radio" name="q1_0" value="2"> Styling</label>
+        </div></div>
+        <div class="quiz-q"><p>2. Which method prints to the browser console?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q2_0" value="0"> print()</label>
+          <label class="quiz-opt"><input type="radio" name="q2_0" value="1"> console.log()</label>
+          <label class="quiz-opt"><input type="radio" name="q2_0" value="2"> log.console()</label>
+        </div></div>
+        <div class="quiz-q"><p>3. How do you add a single-line comment in JavaScript?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q3_0" value="0"> # comment</label>
+          <label class="quiz-opt"><input type="radio" name="q3_0" value="1"> /* comment */</label>
+          <label class="quiz-opt"><input type="radio" name="q3_0" value="2"> // comment</label>
+        </div></div>
+        <button class="quiz-submit" onclick="submitQuiz(0,[1,1,2])">Submit Answers</button>
+        <div class="quiz-result" id="quiz-result-0"></div>
+      </div>
+      <div class="lesson-nav"><span></span><button class="nav-btn nav-btn-next" onclick="goLesson(1)">Next Lesson →</button></div>
+    </div>
+
+    <!-- LESSON 2 -->
+    <div class="lesson-pane" id="lesson-1">
+      <div class="lesson-tag">Lesson 2 of 10</div>
+      <h1 class="lesson-title">Variables &amp; Data Types</h1>
+      <div class="lesson-body">
+        <p>Variables store data. In modern JavaScript, use <code>let</code> for values that change and <code>const</code> for values that stay the same.</p>
+        <div class="code-block"><div class="code-header"><span class="code-lang">JavaScript</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div><pre><code><span class="cmt">// let — can be reassigned</span>
+<span class="kw">let</span> age = <span class="num">22</span>;
+age = <span class="num">23</span>; <span class="cmt">// ✅ allowed</span>
+
+<span class="cmt">// const — cannot be reassigned</span>
+<span class="kw">const</span> country = <span class="str">"Afghanistan"</span>;
+<span class="cmt">// country = "USA"; ❌ Error!</span>
+
+<span class="cmt">// Data types</span>
+<span class="kw">let</span> name    = <span class="str">"Elham"</span>;       <span class="cmt">// String</span>
+<span class="kw">let</span> score   = <span class="num">95</span>;           <span class="cmt">// Number</span>
+<span class="kw">let</span> passed  = <span class="bool">true</span>;         <span class="cmt">// Boolean</span>
+<span class="kw">let</span> nothing = <span class="bool">null</span>;         <span class="cmt">// Null</span>
+<span class="kw">let</span> unknown;                 <span class="cmt">// Undefined</span></code></pre></div>
+        <h3>String tricks</h3>
+        <div class="code-block"><div class="code-header"><span class="code-lang">JavaScript</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div><pre><code><span class="kw">const</span> first = <span class="str">"Elham"</span>;
+<span class="kw">const</span> last  = <span class="str">"Andarabi"</span>;
+
+<span class="cmt">// Concatenation</span>
+<span class="fn">console</span>.<span class="fn">log</span>(first + <span class="str">" "</span> + last);
+
+<span class="cmt">// Template literals (modern, preferred)</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="str">`My name is <span class="kw">${first}</span> <span class="kw">${last}</span>`</span>);</code></pre></div>
+        <div class="tip"><strong>💡 Tip:</strong> Always use <code>const</code> by default. Only switch to <code>let</code> when you know the value will change. This prevents accidental bugs.</div>
+      </div>
+      <div class="quiz-section">
+        <div class="quiz-title">Quick Quiz — Lesson 2</div>
+        <div class="quiz-q"><p>1. Which keyword declares a variable that cannot change?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q1_1" value="0"> let</label>
+          <label class="quiz-opt"><input type="radio" name="q1_1" value="1"> const</label>
+          <label class="quiz-opt"><input type="radio" name="q1_1" value="2"> var</label>
+        </div></div>
+        <div class="quiz-q"><p>2. What data type is true/false?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q2_1" value="0"> String</label>
+          <label class="quiz-opt"><input type="radio" name="q2_1" value="1"> Number</label>
+          <label class="quiz-opt"><input type="radio" name="q2_1" value="2"> Boolean</label>
+        </div></div>
+        <div class="quiz-q"><p>3. What syntax is used in template literals?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q3_1" value="0"> {variable}</label>
+          <label class="quiz-opt"><input type="radio" name="q3_1" value="1"> ${variable}</label>
+          <label class="quiz-opt"><input type="radio" name="q3_1" value="2"> (variable)</label>
+        </div></div>
+        <button class="quiz-submit" onclick="submitQuiz(1,[1,2,1])">Submit Answers</button>
+        <div class="quiz-result" id="quiz-result-1"></div>
+      </div>
+      <div class="lesson-nav"><button class="nav-btn nav-btn-prev" onclick="goLesson(0)">← Previous</button><button class="nav-btn nav-btn-next" onclick="goLesson(2)">Next Lesson →</button></div>
+    </div>
+
+    <!-- LESSON 3 -->
+    <div class="lesson-pane" id="lesson-2">
+      <div class="lesson-tag">Lesson 3 of 10</div>
+      <h1 class="lesson-title">Functions</h1>
+      <div class="lesson-body">
+        <p>A <strong>function</strong> is a reusable block of code. You define it once and call it whenever you need it.</p>
+        <div class="code-block"><div class="code-header"><span class="code-lang">JavaScript</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div><pre><code><span class="cmt">// Define a function</span>
+<span class="kw">function</span> <span class="fn">greet</span>(name) {
+  <span class="kw">return</span> <span class="str">`Hello, <span class="kw">${name}</span>!`</span>;
+}
+
+<span class="cmt">// Call it</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="str">"Elham"</span>)); <span class="cmt">// Hello, Elham!</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">greet</span>(<span class="str">"Sara"</span>));  <span class="cmt">// Hello, Sara!</span>
+
+<span class="cmt">// Arrow function (modern syntax)</span>
+<span class="kw">const</span> <span class="fn">add</span> = (a, b) => a + b;
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">add</span>(<span class="num">3</span>, <span class="num">5</span>)); <span class="cmt">// 8</span></code></pre></div>
+        <h3>Default Parameters</h3>
+        <div class="code-block"><div class="code-header"><span class="code-lang">JavaScript</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div><pre><code><span class="kw">function</span> <span class="fn">welcome</span>(name = <span class="str">"Guest"</span>) {
+  <span class="kw">return</span> <span class="str">`Welcome, <span class="kw">${name}</span>!`</span>;
+}
+
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">welcome</span>());          <span class="cmt">// Welcome, Guest!</span>
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="fn">welcome</span>(<span class="str">"Elham"</span>)); <span class="cmt">// Welcome, Elham!</span></code></pre></div>
+        <div class="tip"><strong>💡 Tip:</strong> Arrow functions <code>() =&gt; {}</code> are the modern way to write functions. They're shorter and handle <code>this</code> differently — you'll use them constantly in React!</div>
+      </div>
+      <div class="quiz-section">
+        <div class="quiz-title">Quick Quiz — Lesson 3</div>
+        <div class="quiz-q"><p>1. What keyword defines a traditional function?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q1_2" value="0"> def</label>
+          <label class="quiz-opt"><input type="radio" name="q1_2" value="1"> function</label>
+          <label class="quiz-opt"><input type="radio" name="q1_2" value="2"> func</label>
+        </div></div>
+        <div class="quiz-q"><p>2. What does the return keyword do?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q2_2" value="0"> Prints to the console</label>
+          <label class="quiz-opt"><input type="radio" name="q2_2" value="1"> Sends a value back from the function</label>
+          <label class="quiz-opt"><input type="radio" name="q2_2" value="2"> Stops the program</label>
+        </div></div>
+        <div class="quiz-q"><p>3. What is the arrow function syntax?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q3_2" value="0"> function => {}</label>
+          <label class="quiz-opt"><input type="radio" name="q3_2" value="1"> () => {}</label>
+          <label class="quiz-opt"><input type="radio" name="q3_2" value="2"> () -> {}</label>
+        </div></div>
+        <button class="quiz-submit" onclick="submitQuiz(2,[1,1,1])">Submit Answers</button>
+        <div class="quiz-result" id="quiz-result-2"></div>
+      </div>
+      <div class="lesson-nav"><button class="nav-btn nav-btn-prev" onclick="goLesson(1)">← Previous</button><button class="nav-btn nav-btn-next" onclick="goLesson(3)">Next Lesson →</button></div>
+    </div>
+
+    <!-- LESSON 4 -->
+    <div class="lesson-pane" id="lesson-3">
+      <div class="lesson-tag">Lesson 4 of 10</div>
+      <h1 class="lesson-title">Conditionals &amp; Loops</h1>
+      <div class="lesson-body">
+        <h3>if / else</h3>
+        <div class="code-block"><div class="code-header"><span class="code-lang">JavaScript</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div><pre><code><span class="kw">const</span> score = <span class="num">75</span>;
+
+<span class="kw">if</span> (score >= <span class="num">90</span>) {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"A grade"</span>);
+} <span class="kw">else if</span> (score >= <span class="num">70</span>) {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"B grade"</span>); <span class="cmt">// ← this runs</span>
+} <span class="kw">else</span> {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Keep trying"</span>);
+}</code></pre></div>
+        <h3>for loop</h3>
+        <div class="code-block"><div class="code-header"><span class="code-lang">JavaScript</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div><pre><code><span class="cmt">// Count from 1 to 5</span>
+<span class="kw">for</span> (<span class="kw">let</span> i = <span class="num">1</span>; i <= <span class="num">5</span>; i++) {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Number: "</span> + i);
+}
+
+<span class="cmt">// Loop through an array</span>
+<span class="kw">const</span> fruits = [<span class="str">"apple"</span>, <span class="str">"banana"</span>, <span class="str">"mango"</span>];
+fruits.<span class="fn">forEach</span>(fruit => {
+  <span class="fn">console</span>.<span class="fn">log</span>(fruit);
+});</code></pre></div>
+        <div class="tip"><strong>💡 Tip:</strong> Use <code>===</code> (triple equals) for comparison in JavaScript, not <code>==</code>. Triple equals checks both value AND type, preventing subtle bugs.</div>
+      </div>
+      <div class="quiz-section">
+        <div class="quiz-title">Quick Quiz — Lesson 4</div>
+        <div class="quiz-q"><p>1. Which operator should you use for equality checks in JS?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q1_3" value="0"> =</label>
+          <label class="quiz-opt"><input type="radio" name="q1_3" value="1"> ==</label>
+          <label class="quiz-opt"><input type="radio" name="q1_3" value="2"> ===</label>
+        </div></div>
+        <div class="quiz-q"><p>2. What does forEach do?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q2_3" value="0"> Creates a new array</label>
+          <label class="quiz-opt"><input type="radio" name="q2_3" value="1"> Runs a function for each item in an array</label>
+          <label class="quiz-opt"><input type="radio" name="q2_3" value="2"> Checks if an array has an item</label>
+        </div></div>
+        <div class="quiz-q"><p>3. What is i++ equivalent to?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q3_3" value="0"> i = 1</label>
+          <label class="quiz-opt"><input type="radio" name="q3_3" value="1"> i = i + 1</label>
+          <label class="quiz-opt"><input type="radio" name="q3_3" value="2"> i * i</label>
+        </div></div>
+        <button class="quiz-submit" onclick="submitQuiz(3,[2,1,1])">Submit Answers</button>
+        <div class="quiz-result" id="quiz-result-3"></div>
+      </div>
+      <div class="lesson-nav"><button class="nav-btn nav-btn-prev" onclick="goLesson(2)">← Previous</button><button class="nav-btn nav-btn-next" onclick="goLesson(4)">Next Lesson →</button></div>
+    </div>
+
+    <!-- LESSON 5 -->
+    <div class="lesson-pane" id="lesson-4">
+      <div class="lesson-tag">Lesson 5 of 10</div>
+      <h1 class="lesson-title">Arrays &amp; Objects</h1>
+      <div class="lesson-body">
+        <h3>Arrays</h3>
+        <p>Arrays store lists of values.</p>
+        <div class="code-block"><div class="code-header"><span class="code-lang">JavaScript</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div><pre><code><span class="kw">const</span> skills = [<span class="str">"HTML"</span>, <span class="str">"CSS"</span>, <span class="str">"JavaScript"</span>];
+
+<span class="fn">console</span>.<span class="fn">log</span>(skills[<span class="num">0</span>]);        <span class="cmt">// "HTML"</span>
+<span class="fn">console</span>.<span class="fn">log</span>(skills.<span class="fn">length</span>);    <span class="cmt">// 3</span>
+
+skills.<span class="fn">push</span>(<span class="str">"React"</span>);          <span class="cmt">// add to end</span>
+skills.<span class="fn">pop</span>();                   <span class="cmt">// remove last</span>
+
+<span class="cmt">// map — transform each item</span>
+<span class="kw">const</span> upper = skills.<span class="fn">map</span>(s => s.<span class="fn">toUpperCase</span>());
+<span class="fn">console</span>.<span class="fn">log</span>(upper); <span class="cmt">// ["HTML","CSS","JAVASCRIPT"]</span></code></pre></div>
+        <h3>Objects</h3>
+        <p>Objects store key-value pairs — like a profile card.</p>
+        <div class="code-block"><div class="code-header"><span class="code-lang">JavaScript</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div><pre><code><span class="kw">const</span> student = {
+  name: <span class="str">"Elham"</span>,
+  age:  <span class="num">22</span>,
+  skills: [<span class="str">"JS"</span>, <span class="str">"Python"</span>],
+  <span class="fn">greet</span>() {
+    <span class="kw">return</span> <span class="str">`Hi, I'm <span class="kw">${this.name}</span>`</span>;
+  }
+};
+
+<span class="fn">console</span>.<span class="fn">log</span>(student.<span class="fn">name</span>);    <span class="cmt">// "Elham"</span>
+<span class="fn">console</span>.<span class="fn">log</span>(student.<span class="fn">greet</span>()); <span class="cmt">// "Hi, I'm Elham"</span></code></pre></div>
+        <div class="tip"><strong>💡 Tip:</strong> Arrays and Objects are the most important data structures in JavaScript. Master these and you can work with any API or database data!</div>
+      </div>
+      <div class="quiz-section">
+        <div class="quiz-title">Quick Quiz — Lesson 5</div>
+        <div class="quiz-q"><p>1. How do you access the first item of an array called "items"?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q1_4" value="0"> items[1]</label>
+          <label class="quiz-opt"><input type="radio" name="q1_4" value="1"> items[0]</label>
+          <label class="quiz-opt"><input type="radio" name="q1_4" value="2"> items.first()</label>
+        </div></div>
+        <div class="quiz-q"><p>2. What does .push() do to an array?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q2_4" value="0"> Removes the last item</label>
+          <label class="quiz-opt"><input type="radio" name="q2_4" value="1"> Adds an item to the end</label>
+          <label class="quiz-opt"><input type="radio" name="q2_4" value="2"> Sorts the array</label>
+        </div></div>
+        <div class="quiz-q"><p>3. What do you use to store key-value pairs?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q3_4" value="0"> An array []</label>
+          <label class="quiz-opt"><input type="radio" name="q3_4" value="1"> An object {}</label>
+          <label class="quiz-opt"><input type="radio" name="q3_4" value="2"> A string ""</label>
+        </div></div>
+        <button class="quiz-submit" onclick="submitQuiz(4,[1,1,1])">Submit Answers</button>
+        <div class="quiz-result" id="quiz-result-4"></div>
+      </div>
+      <div class="lesson-nav"><button class="nav-btn nav-btn-prev" onclick="goLesson(3)">← Previous</button><button class="nav-btn nav-btn-next" onclick="goLesson(5)">Next Lesson →</button></div>
+    </div>
+
+    <!-- LESSON 6 -->
+    <div class="lesson-pane" id="lesson-5">
+      <div class="lesson-tag">Lesson 6 of 10</div>
+      <h1 class="lesson-title">DOM Manipulation</h1>
+      <div class="lesson-body">
+        <p>The <strong>DOM</strong> (Document Object Model) is how JavaScript sees and controls your HTML. You can find elements, change their content, and respond to user actions.</p>
+        <div class="code-block"><div class="code-header"><span class="code-lang">JavaScript</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div><pre><code><span class="cmt">// Find elements</span>
+<span class="kw">const</span> title  = document.<span class="fn">getElementById</span>(<span class="str">"title"</span>);
+<span class="kw">const</span> btn    = document.<span class="fn">querySelector</span>(<span class="str">".my-btn"</span>);
+<span class="kw">const</span> all    = document.<span class="fn">querySelectorAll</span>(<span class="str">"p"</span>);
+
+<span class="cmt">// Change content</span>
+title.<span class="fn">textContent</span> = <span class="str">"New Title!"</span>;
+title.<span class="fn">style</span>.<span class="fn">color</span>  = <span class="str">"blue"</span>;
+
+<span class="cmt">// Add/remove CSS classes</span>
+btn.<span class="fn">classList</span>.<span class="fn">add</span>(<span class="str">"active"</span>);
+btn.<span class="fn">classList</span>.<span class="fn">remove</span>(<span class="str">"hidden"</span>);
+btn.<span class="fn">classList</span>.<span class="fn">toggle</span>(<span class="str">"open"</span>);</code></pre></div>
+        <h3>Creating Elements</h3>
+        <div class="code-block"><div class="code-header"><span class="code-lang">JavaScript</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div><pre><code><span class="kw">const</span> card = document.<span class="fn">createElement</span>(<span class="str">"div"</span>);
+card.<span class="fn">textContent</span> = <span class="str">"New card!"</span>;
+card.<span class="fn">className</span>   = <span class="str">"card"</span>;
+document.<span class="fn">body</span>.<span class="fn">appendChild</span>(card);</code></pre></div>
+        <div class="tip"><strong>💡 Tip:</strong> <code>querySelector</code> uses the same selectors as CSS — so <code>.class</code>, <code>#id</code>, <code>tag</code> all work. Once you know CSS selectors, you know DOM selectors!</div>
+      </div>
+      <div class="quiz-section">
+        <div class="quiz-title">Quick Quiz — Lesson 6</div>
+        <div class="quiz-q"><p>1. What does the DOM stand for?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q1_5" value="0"> Data Object Model</label>
+          <label class="quiz-opt"><input type="radio" name="q1_5" value="1"> Document Object Model</label>
+          <label class="quiz-opt"><input type="radio" name="q1_5" value="2"> Dynamic Object Manager</label>
+        </div></div>
+        <div class="quiz-q"><p>2. How do you select an element with id="box"?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q2_5" value="0"> querySelector(".box")</label>
+          <label class="quiz-opt"><input type="radio" name="q2_5" value="1"> getElementById("box")</label>
+          <label class="quiz-opt"><input type="radio" name="q2_5" value="2"> getElement("box")</label>
+        </div></div>
+        <div class="quiz-q"><p>3. Which method adds a class to an element?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q3_5" value="0"> classList.push()</label>
+          <label class="quiz-opt"><input type="radio" name="q3_5" value="1"> classList.add()</label>
+          <label class="quiz-opt"><input type="radio" name="q3_5" value="2"> addClass()</label>
+        </div></div>
+        <button class="quiz-submit" onclick="submitQuiz(5,[1,1,1])">Submit Answers</button>
+        <div class="quiz-result" id="quiz-result-5"></div>
+      </div>
+      <div class="lesson-nav"><button class="nav-btn nav-btn-prev" onclick="goLesson(4)">← Previous</button><button class="nav-btn nav-btn-next" onclick="goLesson(6)">Next Lesson →</button></div>
+    </div>
+
+    <!-- LESSON 7 -->
+    <div class="lesson-pane" id="lesson-6">
+      <div class="lesson-tag">Lesson 7 of 10</div>
+      <h1 class="lesson-title">Events</h1>
+      <div class="lesson-body">
+        <p><strong>Events</strong> are things that happen — a click, a key press, a form submit. JavaScript lets you listen for events and run code when they happen.</p>
+        <div class="code-block"><div class="code-header"><span class="code-lang">JavaScript</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div><pre><code><span class="kw">const</span> btn = document.<span class="fn">getElementById</span>(<span class="str">"myBtn"</span>);
+
+<span class="cmt">// Listen for a click</span>
+btn.<span class="fn">addEventListener</span>(<span class="str">"click"</span>, () => {
+  <span class="fn">alert</span>(<span class="str">"Button clicked!"</span>);
+});
+
+<span class="cmt">// Listen for keyboard input</span>
+<span class="kw">const</span> input = document.<span class="fn">getElementById</span>(<span class="str">"search"</span>);
+input.<span class="fn">addEventListener</span>(<span class="str">"input"</span>, (e) => {
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Typing: "</span> + e.<span class="fn">target</span>.<span class="fn">value</span>);
+});
+
+<span class="cmt">// Prevent form from refreshing page</span>
+form.<span class="fn">addEventListener</span>(<span class="str">"submit"</span>, (e) => {
+  e.<span class="fn">preventDefault</span>();
+  <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Form submitted!"</span>);
+});</code></pre></div>
+        <h3>Common Events</h3>
+        <ul>
+          <li><strong>click</strong> — user clicks an element</li>
+          <li><strong>input</strong> — user types in an input</li>
+          <li><strong>submit</strong> — user submits a form</li>
+          <li><strong>keydown</strong> — user presses a key</li>
+          <li><strong>mouseover</strong> — user hovers over element</li>
+        </ul>
+        <div class="tip"><strong>💡 Tip:</strong> Always use <code>addEventListener</code> instead of inline <code>onclick="..."</code> in HTML. It's cleaner and lets you add multiple listeners to the same element.</div>
+      </div>
+      <div class="quiz-section">
+        <div class="quiz-title">Quick Quiz — Lesson 7</div>
+        <div class="quiz-q"><p>1. Which method attaches an event listener?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q1_6" value="0"> attachEvent()</label>
+          <label class="quiz-opt"><input type="radio" name="q1_6" value="1"> addEventListener()</label>
+          <label class="quiz-opt"><input type="radio" name="q1_6" value="2"> onEvent()</label>
+        </div></div>
+        <div class="quiz-q"><p>2. What does e.preventDefault() do?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q2_6" value="0"> Removes an event listener</label>
+          <label class="quiz-opt"><input type="radio" name="q2_6" value="1"> Stops the browser's default action</label>
+          <label class="quiz-opt"><input type="radio" name="q2_6" value="2"> Deletes the element</label>
+        </div></div>
+        <div class="quiz-q"><p>3. Which event fires when a user types in an input?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q3_6" value="0"> keypress</label>
+          <label class="quiz-opt"><input type="radio" name="q3_6" value="1"> type</label>
+          <label class="quiz-opt"><input type="radio" name="q3_6" value="2"> input</label>
+        </div></div>
+        <button class="quiz-submit" onclick="submitQuiz(6,[1,1,2])">Submit Answers</button>
+        <div class="quiz-result" id="quiz-result-6"></div>
+      </div>
+      <div class="lesson-nav"><button class="nav-btn nav-btn-prev" onclick="goLesson(5)">← Previous</button><button class="nav-btn nav-btn-next" onclick="goLesson(7)">Next Lesson →</button></div>
+    </div>
+
+    <!-- LESSON 8 -->
+    <div class="lesson-pane" id="lesson-7">
+      <div class="lesson-tag">Lesson 8 of 10</div>
+      <h1 class="lesson-title">Fetch API &amp; JSON</h1>
+      <div class="lesson-body">
+        <p>The <strong>Fetch API</strong> lets your JavaScript talk to servers — loading data from APIs without refreshing the page. Data is usually returned as <strong>JSON</strong>.</p>
+        <div class="code-block"><div class="code-header"><span class="code-lang">JavaScript</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div><pre><code><span class="cmt">// Fetch data from a public API</span>
+<span class="fn">fetch</span>(<span class="str">"https://api.github.com/users/elhamandarabi"</span>)
+  .<span class="fn">then</span>(response => response.<span class="fn">json</span>())
+  .<span class="fn">then</span>(data => {
+    <span class="fn">console</span>.<span class="fn">log</span>(data.<span class="fn">name</span>);
+    <span class="fn">console</span>.<span class="fn">log</span>(data.<span class="fn">public_repos</span>);
+  })
+  .<span class="fn">catch</span>(err => <span class="fn">console</span>.<span class="fn">log</span>(<span class="str">"Error:"</span>, err));
+
+<span class="cmt">// Modern async/await version (cleaner)</span>
+<span class="kw">async function</span> <span class="fn">getUser</span>() {
+  <span class="kw">const</span> res  = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">"https://api.github.com/users/elhamandarabi"</span>);
+  <span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+  <span class="fn">console</span>.<span class="fn">log</span>(data);
+}
+<span class="fn">getUser</span>();</code></pre></div>
+        <div class="tip"><strong>💡 Tip:</strong> Always use <code>async/await</code> — it looks like normal code and is much easier to read than chained <code>.then()</code> calls. Wrap it in <code>try/catch</code> for error handling.</div>
+      </div>
+      <div class="quiz-section">
+        <div class="quiz-title">Quick Quiz — Lesson 8</div>
+        <div class="quiz-q"><p>1. What format does fetch usually return data in?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q1_7" value="0"> XML</label>
+          <label class="quiz-opt"><input type="radio" name="q1_7" value="1"> JSON</label>
+          <label class="quiz-opt"><input type="radio" name="q1_7" value="2"> CSV</label>
+        </div></div>
+        <div class="quiz-q"><p>2. What keyword makes a function asynchronous?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q2_7" value="0"> sync</label>
+          <label class="quiz-opt"><input type="radio" name="q2_7" value="1"> async</label>
+          <label class="quiz-opt"><input type="radio" name="q2_7" value="2"> wait</label>
+        </div></div>
+        <div class="quiz-q"><p>3. What does .json() do to a fetch response?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q3_7" value="0"> Converts it to a string</label>
+          <label class="quiz-opt"><input type="radio" name="q3_7" value="1"> Parses the response body as JSON</label>
+          <label class="quiz-opt"><input type="radio" name="q3_7" value="2"> Sends a JSON request</label>
+        </div></div>
+        <button class="quiz-submit" onclick="submitQuiz(7,[1,1,1])">Submit Answers</button>
+        <div class="quiz-result" id="quiz-result-7"></div>
+      </div>
+      <div class="lesson-nav"><button class="nav-btn nav-btn-prev" onclick="goLesson(6)">← Previous</button><button class="nav-btn nav-btn-next" onclick="goLesson(8)">Next Lesson →</button></div>
+    </div>
+
+    <!-- LESSON 9 -->
+    <div class="lesson-pane" id="lesson-8">
+      <div class="lesson-tag">Lesson 9 of 10</div>
+      <h1 class="lesson-title">localStorage &amp; ES6+ Features</h1>
+      <div class="lesson-body">
+        <h3>localStorage</h3>
+        <p>localStorage lets you save data in the browser — it persists even after closing the tab.</p>
+        <div class="code-block"><div class="code-header"><span class="code-lang">JavaScript</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div><pre><code><span class="cmt">// Save data</span>
+localStorage.<span class="fn">setItem</span>(<span class="str">"username"</span>, <span class="str">"Elham"</span>);
+
+<span class="cmt">// Read data</span>
+<span class="kw">const</span> name = localStorage.<span class="fn">getItem</span>(<span class="str">"username"</span>); <span class="cmt">// "Elham"</span>
+
+<span class="cmt">// Save an object (must stringify)</span>
+<span class="kw">const</span> user = { name: <span class="str">"Elham"</span>, score: <span class="num">95</span> };
+localStorage.<span class="fn">setItem</span>(<span class="str">"user"</span>, JSON.<span class="fn">stringify</span>(user));
+
+<span class="cmt">// Read it back</span>
+<span class="kw">const</span> saved = JSON.<span class="fn">parse</span>(localStorage.<span class="fn">getItem</span>(<span class="str">"user"</span>));</code></pre></div>
+        <h3>Useful ES6+ Features</h3>
+        <div class="code-block"><div class="code-header"><span class="code-lang">JavaScript</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div><pre><code><span class="cmt">// Destructuring</span>
+<span class="kw">const</span> { name, age } = student;
+
+<span class="cmt">// Spread operator</span>
+<span class="kw">const</span> newSkills = [...skills, <span class="str">"React"</span>];
+
+<span class="cmt">// Optional chaining (avoid errors)</span>
+<span class="kw">const</span> city = user?.address?.city;
+
+<span class="cmt">// Nullish coalescing</span>
+<span class="kw">const</span> display = name ?? <span class="str">"Anonymous"</span>;</code></pre></div>
+        <div class="tip"><strong>💡 Tip:</strong> Destructuring and the spread operator are used constantly in React. Getting comfortable with them now will make learning React much smoother!</div>
+      </div>
+      <div class="quiz-section">
+        <div class="quiz-title">Quick Quiz — Lesson 9</div>
+        <div class="quiz-q"><p>1. What method saves a value to localStorage?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q1_8" value="0"> localStorage.save()</label>
+          <label class="quiz-opt"><input type="radio" name="q1_8" value="1"> localStorage.setItem()</label>
+          <label class="quiz-opt"><input type="radio" name="q1_8" value="2"> localStorage.store()</label>
+        </div></div>
+        <div class="quiz-q"><p>2. Why do you use JSON.stringify() before saving to localStorage?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q2_8" value="0"> To compress the data</label>
+          <label class="quiz-opt"><input type="radio" name="q2_8" value="1"> localStorage only stores strings, so objects must be converted</label>
+          <label class="quiz-opt"><input type="radio" name="q2_8" value="2"> To encrypt the data</label>
+        </div></div>
+        <div class="quiz-q"><p>3. What does the spread operator (...) do to an array?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q3_8" value="0"> Deletes it</label>
+          <label class="quiz-opt"><input type="radio" name="q3_8" value="1"> Spreads its elements into a new array or function call</label>
+          <label class="quiz-opt"><input type="radio" name="q3_8" value="2"> Sorts it</label>
+        </div></div>
+        <button class="quiz-submit" onclick="submitQuiz(8,[1,1,1])">Submit Answers</button>
+        <div class="quiz-result" id="quiz-result-8"></div>
+      </div>
+      <div class="lesson-nav"><button class="nav-btn nav-btn-prev" onclick="goLesson(7)">← Previous</button><button class="nav-btn nav-btn-next" onclick="goLesson(9)">Next Lesson →</button></div>
+    </div>
+
+    <!-- LESSON 10 -->
+    <div class="lesson-pane" id="lesson-9">
+      <div class="lesson-tag">Lesson 10 of 10</div>
+      <h1 class="lesson-title">Build an Interactive To-Do App</h1>
+      <div class="lesson-body">
+        <p>Let's put it all together — a fully working to-do list using everything you learned.</p>
+        <div class="code-block"><div class="code-header"><span class="code-lang">HTML + JavaScript</span><button class="code-copy" onclick="copyCode(this)">Copy</button></div><pre><code><span class="tag">&lt;input</span> <span class="attr">id</span>=<span class="str">"taskInput"</span> <span class="attr">placeholder</span>=<span class="str">"Add a task..."</span><span class="tag">&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">onclick</span>=<span class="str">"addTask()"</span><span class="tag">&gt;</span>Add<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;ul</span> <span class="attr">id</span>=<span class="str">"taskList"</span><span class="tag">&gt;&lt;/ul&gt;</span>
+
+<span class="tag">&lt;script&gt;</span>
+<span class="kw">let</span> tasks = JSON.<span class="fn">parse</span>(localStorage.<span class="fn">getItem</span>(<span class="str">"tasks"</span>)) || [];
+
+<span class="kw">function</span> <span class="fn">render</span>() {
+  <span class="kw">const</span> list = document.<span class="fn">getElementById</span>(<span class="str">"taskList"</span>);
+  list.<span class="fn">innerHTML</span> = tasks.<span class="fn">map</span>((t, i) =>
+    <span class="str">`&lt;li&gt;<span class="kw">${t}</span> &lt;button onclick="remove(<span class="kw">${i}</span>)"&gt;✕&lt;/button&gt;&lt;/li&gt;`</span>
+  ).<span class="fn">join</span>(<span class="str">""</span>);
+}
+
+<span class="kw">function</span> <span class="fn">addTask</span>() {
+  <span class="kw">const</span> val = document.<span class="fn">getElementById</span>(<span class="str">"taskInput"</span>).<span class="fn">value</span>.<span class="fn">trim</span>();
+  <span class="kw">if</span> (!val) <span class="kw">return</span>;
+  tasks.<span class="fn">push</span>(val);
+  localStorage.<span class="fn">setItem</span>(<span class="str">"tasks"</span>, JSON.<span class="fn">stringify</span>(tasks));
+  <span class="fn">render</span>();
+}
+
+<span class="kw">function</span> <span class="fn">remove</span>(i) {
+  tasks.<span class="fn">splice</span>(i, <span class="num">1</span>);
+  localStorage.<span class="fn">setItem</span>(<span class="str">"tasks"</span>, JSON.<span class="fn">stringify</span>(tasks));
+  <span class="fn">render</span>();
+}
+
+<span class="fn">render</span>();
+<span class="tag">&lt;/script&gt;</span></code></pre></div>
+        <div class="tip"><strong>🎉 Congratulations!</strong> You've completed JavaScript Essentials. You can now build interactive websites, work with APIs, and manage data. You're ready to learn React!</div>
+      </div>
+      <div class="quiz-section">
+        <div class="quiz-title">Final Quiz — Lesson 10</div>
+        <div class="quiz-q"><p>1. Which method removes an item from an array at a specific index?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q1_9" value="0"> remove()</label>
+          <label class="quiz-opt"><input type="radio" name="q1_9" value="1"> splice()</label>
+          <label class="quiz-opt"><input type="radio" name="q1_9" value="2"> delete()</label>
+        </div></div>
+        <div class="quiz-q"><p>2. What does .trim() do to a string?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q2_9" value="0"> Converts it to uppercase</label>
+          <label class="quiz-opt"><input type="radio" name="q2_9" value="1"> Removes whitespace from both ends</label>
+          <label class="quiz-opt"><input type="radio" name="q2_9" value="2"> Shortens the string to 10 characters</label>
+        </div></div>
+        <div class="quiz-q"><p>3. What does .join("") do to an array?</p><div class="quiz-options">
+          <label class="quiz-opt"><input type="radio" name="q3_9" value="0"> Sorts items alphabetically</label>
+          <label class="quiz-opt"><input type="radio" name="q3_9" value="1"> Combines all items into a single string</label>
+          <label class="quiz-opt"><input type="radio" name="q3_9" value="2"> Adds items together mathematically</label>
+        </div></div>
+        <button class="quiz-submit" onclick="submitQuiz(9,[1,1,1])">Submit Answers</button>
+        <div class="quiz-result" id="quiz-result-9"></div>
+      </div>
+      <div id="cert-section" class="cert-section" style="display:none;">
+        <div style="font-size:48px;margin-bottom:.5rem;">🏆</div>
+        <h2>Course Complete!</h2>
+        <p>You've finished all 10 lessons of JavaScript Essentials. Download your certificate!</p>
+        <button class="cert-btn" onclick="downloadCertificate()">Download Certificate</button>
+        <canvas id="certCanvas" width="900" height="620"></canvas>
+      </div>
+      <div class="lesson-nav"><button class="nav-btn nav-btn-prev" onclick="goLesson(8)">← Previous</button><a href="courses.html" class="nav-btn nav-btn-next" style="text-decoration:none;">Back to Courses</a></div>
+    </div>
+  </main>
+</div>
+
+<script>
+const COURSE_ID='js',TOTAL=10;
+let progress=JSON.parse(localStorage.getItem('course_'+COURSE_ID)||'{"completed":0,"lessons":{}}');
+const titles=['What is JavaScript?','Variables & Data Types','Functions','Conditionals & Loops','Arrays & Objects','DOM Manipulation','Events','Fetch API & JSON','localStorage & ES6+','Build a To-Do App'];
+function renderSidebar(){document.getElementById('lessonList').innerHTML=titles.map((t,i)=>`<div class="lesson-item ${progress.lessons[i]?'done':''}" id="nav-${i}" onclick="goLesson(${i})"><div class="lesson-num">${progress.lessons[i]?'✓':i+1}</div>${t}</div>`).join('');updateProgress();}
+function updateProgress(){const pct=Math.round((progress.completed/TOTAL)*100);document.getElementById('topbarFill').style.width=pct+'%';document.getElementById('topbarPct').textContent=pct+'%';document.getElementById('sidebarPct').textContent=progress.completed+' of '+TOTAL+' lessons complete';if(progress.completed===TOTAL)document.getElementById('cert-section').style.display='block';}
+function goLesson(i){document.querySelectorAll('.lesson-pane').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.lesson-item').forEach(p=>p.classList.remove('active'));document.getElementById('lesson-'+i).classList.add('active');const nav=document.getElementById('nav-'+i);if(nav)nav.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});if(!progress.lessons[i]){progress.lessons[i]=true;progress.completed=Object.keys(progress.lessons).length;localStorage.setItem('course_'+COURSE_ID,JSON.stringify(progress));renderSidebar();}document.getElementById('nav-'+i).classList.add('active');}
+function submitQuiz(li,answers){let score=0;answers.forEach((correct,qi)=>{const sel=document.querySelector(`input[name="q${qi+1}_${li}"]:checked`);document.querySelectorAll(`input[name="q${qi+1}_${li}"]`).forEach(o=>{o.closest('.quiz-opt').style.pointerEvents='none';if(parseInt(o.value)===correct)o.closest('.quiz-opt').classList.add('correct');});if(sel&&parseInt(sel.value)===correct)score++;else if(sel)sel.closest('.quiz-opt').classList.add('wrong');});const res=document.getElementById('quiz-result-'+li);if(score===answers.length){res.className='quiz-result pass';res.textContent='✅ Perfect! '+score+'/'+answers.length+' correct!';}else{res.className='quiz-result fail';res.textContent='❌ '+score+'/'+answers.length+' correct. Review and try again.';}}
+function copyCode(btn){navigator.clipboard.writeText(btn.closest('.code-block').querySelector('code').innerText).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000);});}
+function downloadCertificate(){const canvas=document.getElementById('certCanvas'),ctx=canvas.getContext('2d'),W=900,H=620;ctx.fillStyle='#ffffff';ctx.fillRect(0,0,W,H);ctx.strokeStyle='#eab308';ctx.lineWidth=8;ctx.strokeRect(20,20,W-40,H-40);ctx.strokeStyle='#fde68a';ctx.lineWidth=2;ctx.strokeRect(32,32,W-64,H-64);ctx.fillStyle='#eab308';ctx.fillRect(0,0,W,80);ctx.fillStyle='#ffffff';ctx.font='bold 26px DM Mono,monospace';ctx.textAlign='center';ctx.fillText('Elham.dev — Certificate of Completion',W/2,52);ctx.fillStyle='#0f172a';ctx.font='18px sans-serif';ctx.fillText('This is to certify that',W/2,150);const name=prompt('Enter your name:','Student')||'Student';ctx.font='bold 42px serif';ctx.fillStyle='#ca8a04';ctx.fillText(name,W/2,220);ctx.fillStyle='#475569';ctx.font='18px sans-serif';ctx.fillText('has successfully completed the course',W/2,270);ctx.fillStyle='#0f172a';ctx.font='bold 28px sans-serif';ctx.fillText('JavaScript Essentials',W/2,320);ctx.fillStyle='#475569';ctx.font='15px sans-serif';ctx.fillText('10 Lessons · '+new Date().toLocaleDateString('en-GB',{year:'numeric',month:'long',day:'numeric'}),W/2,360);ctx.strokeStyle='#eab308';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(200,400);ctx.lineTo(700,400);ctx.stroke();ctx.fillStyle='#ca8a04';ctx.font='bold 16px DM Mono,monospace';ctx.fillText('Elhamuddin Andarabi',W/2,440);ctx.fillStyle='#94a3b8';ctx.font='13px sans-serif';ctx.fillText('Instructor · Full Stack Developer',W/2,465);const link=document.createElement('a');link.download='JavaScript-Certificate.png';link.href=canvas.toDataURL();link.click();}
+function toggleTheme(){const h=document.documentElement,b=document.getElementById('themeBtn');if(h.getAttribute('data-theme')==='light'){h.setAttribute('data-theme','dark');b.textContent='☀️ Light';}else{h.setAttribute('data-theme','light');b.textContent='🌙 Dark';}}
+renderSidebar();goLesson(Math.min(Object.keys(progress.lessons).length,TOTAL-1));
+</script>
+</body>
+</html>
